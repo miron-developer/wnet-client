@@ -124,66 +124,6 @@ export const CHAT_GROUP = {
     datetime: '1607764500000',
 };
 
-export const CHAT_MESSAGE_TEXT = {
-    id: 1,
-    type: 'message',
-    msgType: 'text',
-    datetime: '1607764500000',
-    body: 'message text',
-    avatar: '/img/default-avatar.png',
-    senderID: 2,
-    receiverID: 1,
-    src: '',
-}
-
-export const CHAT_MESSAGE_FILE = {
-    id: 1,
-    type: 'message',
-    msgType: 'file',
-    datetime: '1607764500000',
-    body: 'message text',
-    avatar: '/img/default-avatar.png',
-    senderID: 2,
-    receiverID: 1,
-    src: '/img/clip.png',
-}
-
-export const CHAT_MESSAGE_PHOTO = {
-    id: 1,
-    type: 'message',
-    msgType: 'photo',
-    datetime: '1607764500000',
-    body: 'message text',
-    avatar: '/img/default-avatar.png',
-    senderID: 2,
-    receiverID: 1,
-    src: '/img/default-avatar.png',
-}
-
-export const CHAT_MESSAGE_VIDEO = {
-    id: 1,
-    type: 'message',
-    msgType: 'video',
-    datetime: '1614714342917',
-    body: 'message text',
-    avatar: '/img/default-avatar.png',
-    senderID: 1,
-    receiverID: 2,
-    src: '/img/default-avatar.png',
-}
-
-export const CHAT_MESSAGE_AUDIO = {
-    id: 1,
-    type: 'message',
-    msgType: 'audio',
-    datetime: '1614714342917',
-    body: 'message text',
-    avatar: '/img/default-avatar.png',
-    senderID: 1,
-    receiverID: 2,
-    src: '/audio/ex.mp3',
-}
-
 export const CLIPPED_FILE_IMG = {
     id: 1,
     postID: 1,
