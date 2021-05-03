@@ -1,7 +1,7 @@
 export const MIN_ACCESS_YEAR = new Date().getFullYear() - 100;
-export const HOST = "localhost:4330";
+// export const HOST = "localhost:4330";
+export const HOST = "api.wnet.herokuapp.com";
 export const HOST_URL = "https://" + HOST;
-// export const HOST_URL = 'https://wnet.herokuapp.com';
 
 // NOTIFICATION TYPES
 export const NOTE_CREATE_POST = 1;
