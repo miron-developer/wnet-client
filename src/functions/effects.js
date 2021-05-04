@@ -64,10 +64,10 @@ export const ScrollHandler = Debounce(async(e, isStopLoad, isScrollingToTop = fa
 }, 100);
 
 const checkPermission = async(name) => {
-    const result = await navigator.permissions.query({ 'name': name });
-    if (result.state === 'granted') {
+    const result = await navigator.permissions?.query({ 'name': name });
+    if (result?.state === 'granted') {
         return true;
-    } else if (result.state === 'prompt') {
+    } else if (result?.state === 'prompt') {
         return true;
     }
     return false;
