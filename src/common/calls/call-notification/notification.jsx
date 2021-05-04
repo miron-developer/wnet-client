@@ -67,6 +67,8 @@ export default function CallNotification({notification, Accept, Decline}) {
     const icon = notification.type === 'video' ? icons[0] : icons[1];
     const isMeCalling = notification.whomCalling === 'me';
 
+    console.log('notif:', notification, isMeCalling);
+
     return (
         <SNotification>
             <Avatar avatar={isMeCalling ? USER.avatar : notification.avatar} isNeedBorder={false} size="" />

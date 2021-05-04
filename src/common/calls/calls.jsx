@@ -90,7 +90,7 @@ const getScreenShareStream = async() => {
 }
 
 const getUserMediaStream = async(type) => {
-    // if (navigator.userAgent.indexOf("Firefox") === -1 && !(await CheckPermissions(['camera', 'microphone']))) return null;
+    if (navigator.userAgent.indexOf("Firefox") === -1 && !(await CheckPermissions(['camera', 'microphone']))) return null;
     const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
     if (type === 'audio') AudioVideoOnOff('video', stream);
     else AudioVideoOnOff('audio', stream);
@@ -170,15 +170,14 @@ const ShareScreen = async() => {
 }
 
 export const GetCalled = async(type, call, userID, userPeerID, notificationState = {}) => {
-    console.log('get calls data', type, call, userID, userPeerID, notificationState);
+    console.log('calls data:', type, call, userID, userPeerID, notificationState);
     if (MyPeer.conn && type !== 'share') return SendWSMessage(21, userID, 'user not free now');
     if (type !== 'share') {
         const stream = await getUserMediaStream(notificationState.type);
-        console.log('getted stream', stream);
         if (!stream) return SendWSMessage(22, userID, 'user not available');
         setState('opened', true);
-        setState('notification', notificationState);
         setState('stream', stream);
+        setState('notification', notificationState);
         addVideos({ 'type': 'my', 'stream': stream });
         MyPeer.opponentPeerID = userPeerID;
         MyPeer.userID = userID;
