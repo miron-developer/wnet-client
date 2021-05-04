@@ -90,10 +90,8 @@ const getScreenShareStream = async() => {
 }
 
 const getUserMediaStream = async(type) => {
-    if (navigator.userAgent.indexOf("Firefox") === -1 && !(await CheckPermissions(['camera', 'microphone']))) return null;
-    console.log('checked permission', type);
+    // if (navigator.userAgent.indexOf("Firefox") === -1 && !(await CheckPermissions(['camera', 'microphone']))) return null;
     const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
-    console.log('get stream', stream);
     if (type === 'audio') AudioVideoOnOff('video', stream);
     else AudioVideoOnOff('audio', stream);
     return stream;
