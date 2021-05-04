@@ -18,11 +18,18 @@ const SSpeechMicro = styled.div`
 
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-const recognition = new SR();
-recognition.lang = 'ru-RU';
-recognition.continuous = true;
+const getSR = () => {
+    if (SR) {
+        const recognition = new SR();
+        recognition.lang = 'ru-RU';
+        recognition.continuous = true;        
+        return recognition;
+    }
+}
 
-const stopAfter = () => setTimeout(() => recognition.stop(), 5000);
+const recognition = getSR();
+
+const stopAfter = () => setTimeout(() => recognition?.stop(), 5000);
 
 export default function Speech({callback}) {
     const [isStart, setStart] = useState(false);
