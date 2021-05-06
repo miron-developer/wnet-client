@@ -98,10 +98,10 @@ const getUserMediaStream = async(type) => {
 
 const HandleShareCall = (type, call, stream = {}) => {
     const handleStream = (shareStream) => {
-        addVideo({ 'type': 'main', 'stream': shareStream });
         MyPeer.shareStream = shareStream;
         peers['share'] = call;
         setState('onShare', true);
+        addVideo({ 'type': 'main', 'stream': shareStream });
         
         shareStream.getVideoTracks()[0].onended = StopShare;
         call.on('close', StopShare);    
@@ -110,12 +110,12 @@ const HandleShareCall = (type, call, stream = {}) => {
     console.log(type, call, stream);
     changeVideoPlace('main', 'user');
     
-    // if (type === 'user') {
-    //     return call.on('stream', userShareStream => {
-    //         handleStream(userShareStream);
-    //     });
-    // }
-    // handleStream(stream);
+    if (type === 'user') {
+        return call.on('stream', userShareStream => {
+            handleStream(userShareStream);
+        });
+    }
+    handleStream(stream);
 }
 
 const HandleUserCall = (call) => {
@@ -251,7 +251,9 @@ export default function CallsPopup() {
     const [stream, setStream] = useState();
     const [videos, setVideos] = useState([]);
 
-    addVideo = (video = {}) => setVideos([...videos, video]);
+    addVideo = (video = {}) => {
+        if (!videos.find(v => v.type === video.type)) setVideos([...videos, video]);
+    }
     removeVideo = (type) => setVideos(videos.filter(video => video.type !== type));
     changeVideoPlace = (from = 'main', to = 'user') => {
         setVideos(videos.map(video => {

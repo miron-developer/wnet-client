@@ -27,7 +27,7 @@ const selectAct = (data) => {
     if (data.msgType === 22) return StopShare(false);
 }
 
-export const CloseWSConnection = () => wss ? wss.close() : null;
+export const CloseWSConnection = () => wss?.close();
 
 export const IsWSOpen = () => wss ? true : false;
 
