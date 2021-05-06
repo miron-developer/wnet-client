@@ -1,3 +1,6 @@
+
+import { IsWSOpen } from 'functions/ws';
+import { Notify } from 'common/app-notification/notification';
 import { ToCall } from 'common/calls/calls';
 import Avatar from 'common/avatar/avatar';
 
@@ -66,8 +69,8 @@ export default function ChatHeader({isUser, status, avatar, name, id}) {
             <SChatName>{name}</SChatName>
 
             <SCalls>
-                <OneCall status={status} isUser={isUser} icon="0" onClick={() => ToCall('video', id)} />
-                <OneCall status={status} isUser={isUser} icon="1" onClick={() => ToCall('audio', id)} />
+                <OneCall status={status} isUser={isUser} icon="0" onClick={() => IsWSOpen() ? ToCall('video', id) : Notify('fail', 'Connection closed')} />
+                <OneCall status={status} isUser={isUser} icon="1" onClick={() => IsWSOpen() ? ToCall('video', id) : Notify('fail', 'Connection closed')} />
             </SCalls>
         </SChatHeader>
     )

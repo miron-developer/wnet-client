@@ -67,8 +67,6 @@ export default function CallNotification({notification, Accept, Decline}) {
     const icon = notification.type === 'video' ? icons[0] : icons[1];
     const isMeCalling = notification.whomCalling === 'me';
 
-    console.log('notif:', notification, isMeCalling);
-
     return (
         <SNotification>
             <Avatar avatar={isMeCalling ? USER.avatar : notification.avatar} isNeedBorder={false} size="" />
@@ -78,7 +76,7 @@ export default function CallNotification({notification, Accept, Decline}) {
                 {
                     isMeCalling 
                         ?  <span>{Library.getText('common.calls.notification.youAreCalling').replace('CALLTYPE', notification.type)}</span>
-                        :  <span>{Library.getText('common.calls.notification.youAreCalling').replace('CALLTYPE', notification.type).replace('NAME', notification.nickname)}</span>
+                        :  <span>{Library.getText('common.calls.notification.somebodyAreCalling').replace('CALLTYPE', notification.type).replace('NAME', notification.nickname)}</span>
                 }
             </SNotificationBody>
 

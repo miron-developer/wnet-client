@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { Library } from "constants/language";
+import { USER } from "constants/constants";
 import { SendWSMessage } from "functions/ws";
 import { CheckPermissions } from "functions/effects";
 import { Notify } from "common/app-notification/notification";
@@ -9,7 +10,6 @@ import CallNotification from 'common/calls/call-notification/notification';
 import CallVideo from 'common/calls/call-video/video';
 import CallManaging from 'common/calls/call-managing/managing';
 import styled from "styled-components";
-import { USER } from "constants/constants";
 
 const SCalls = styled.div`
     position: ${props => props.isOpened ? 'fixed' : 'unset'};
@@ -43,6 +43,7 @@ const MyPeer = {
     myPeerID: undefined,
     opponentPeerID : undefined,
     shareStream: undefined,
+    myStream: undefined,
     userID: undefined,
 }
 
@@ -52,20 +53,18 @@ const ZeroMyPeer = () => {
     MyPeer.myPeerID = undefined;
     MyPeer.opponentPeerID = undefined;
     MyPeer.userID = undefined;
+    if (MyPeer.myStream) MyPeer.myStream.getTracks().forEach(track => track.stop());
     if (MyPeer.shareStream) MyPeer.shareStream.getTracks().forEach(track => track.stop());
     Object.values(peers).forEach(call => call.close());
 }
 
 const peers = {};
-export const CloseCalls = () => {
-    Object.values(peers).forEach(call => call.close());
-}
 
 let setState;
 
-let addVideos;
+let addVideo;
 let removeVideo;
-let changeUserPlace;
+let changeVideoPlace;
 
 const AudioVideoOnOff = (type, stream) => {
     if (!stream || !type) return Notify('fail', Library.getText('common.calls.calls.audioVideoOnOffFail'))
@@ -97,69 +96,84 @@ const getUserMediaStream = async(type) => {
     return stream;
 }
 
-const HandleShareCall = (type, call, stream) => {
-    const remove = () => {
-        removeVideo('main');
-        changeUserPlace('user', 'main');
-        setState('onShare', false);
+const HandleShareCall = (type, call, stream = {}) => {
+    const handleStream = (shareStream) => {
+        addVideo({ 'type': 'main', 'stream': shareStream });
+        MyPeer.shareStream = shareStream;
+        peers['share'] = call;
+        setState('onShare', true);
+        
+        shareStream.getVideoTracks()[0].onended = StopShare;
+        call.on('close', StopShare);    
     }
 
-    changeUserPlace('main', 'user');
+    console.log(type, call, stream);
+    changeVideoPlace('main', 'user');
     
-    let shareStream = stream;
-    if (type === 'user') {
-        call.on('stream', userShareStream => {
-            shareStream = userShareStream;
-        });
-    }
-
-    addVideos({ 'type': 'main', 'stream': shareStream });
-    MyPeer.shareStream = shareStream;
-    peers['share'] = call;
-    
-    shareStream.getVideoTracks()[0].onended = remove;
-    call.on('close', remove);
+    // if (type === 'user') {
+    //     return call.on('stream', userShareStream => {
+    //         handleStream(userShareStream);
+    //     });
+    // }
+    // handleStream(stream);
 }
 
-const HandleUserCall = (call, stream) => {
+const HandleUserCall = (call) => {
     call.on('stream', userVideoStream => {
-        addVideos({ 'type': 'main', 'stream': userVideoStream });
+        console.log('on stream add');
+        addVideo({ 'type': 'main', 'stream': userVideoStream });
     });
 
     call.on('close', () => {
-        Decline(stream);
+        Decline(false);
     });
 }
 
-const Accept = stream => {
-    setState('notification', undefined);
+const preCallPreparing = async(type, userID, notificationState, isMeCalling = false) => {
+    const stream = await getUserMediaStream(type);
+    
+    if (!stream) {
+        if (isMeCalling) return Notify('fail', 'You can not call, bcs you do not give access to camera and micro to WNET!');
+        return SendWSMessage(22, userID);
+    }
+
     MyPeer.conn = new Peer();
-
-    MyPeer.conn.on('open', async(myPeerID) => {
-        MyPeer.myPeerID = myPeerID;
-        const call = MyPeer.conn.call(MyPeer.opponentPeerID, stream, { metadata: {'peerID': myPeerID, 'type': 'call'} });
-        if (call) {
-            HandleUserCall(call, stream);
-            peers[MyPeer.opponentPeerID] = call;
-        }
-    });
+    MyPeer.myStream = stream;
+    MyPeer.userID = userID;
+    setState('opened', true);
+    setState('stream', stream);
+    setState('notification', notificationState);
+    addVideo({ 'type': 'my', 'stream': stream });
 }
 
-const Decline = stream => {
-    if (stream) stream.getTracks().forEach(t => t.stop());
+const onPeerCall = (call) => {
+    console.log('get peer called', call);
+    if (call.metadata.type === 'call') {
+        peers[call.metadata.peerID] = call;
+        MyPeer.opponentPeerID = call.metadata.peerID;
+        call.answer(MyPeer.myStream);
+        setState('notification', undefined);
+        HandleUserCall(call, MyPeer.myStream);
+    } else HandleShareCall('user', call);
+}
+
+const Accept = () => {
+    setState('notification', undefined);
+
+    const call = MyPeer.conn.call(MyPeer.opponentPeerID, MyPeer.myStream, { metadata: {'peerID': MyPeer.myPeerID, 'type': 'call'} });
+    if (call) {
+        HandleUserCall(call);
+        peers[MyPeer.opponentPeerID] = call;
+    }
+}
+
+const Decline = (isMeDecline = true) => {
     setState('opened', false);
     setState('videos', []);
     setState('stream', undefined);
+    
+    if (MyPeer.userID && isMeDecline) SendWSMessage(22, MyPeer.userID, 'user disconnected');
     ZeroMyPeer();
-
-    SendWSMessage(22, MyPeer.userID, 'user disconnected');
-}
-
-const StopSharing = () => {
-    if (!MyPeer.shareStream) return;
-    MyPeer.shareStream.getTracks().forEach(track => track.stop());
-    MyPeer.shareStream = undefined;
-    return removeVideo('main') || true;
 }
 
 const ShareScreen = async() => {
@@ -169,56 +183,63 @@ const ShareScreen = async() => {
     return HandleShareCall('my', call, stream) || true;
 }
 
-export const GetCalled = async(type, call, userID, userPeerID, notificationState = {}) => {
-    console.log('calls data:', type, call, userID, userPeerID, notificationState);
+export const StopShare = (isMyShare = true) => {
+    if (!MyPeer.shareStream) return;
+    MyPeer.shareStream.getTracks().forEach(track => track.stop());
+    MyPeer.shareStream = undefined;
+    removeVideo('main')
+    changeVideoPlace('user', 'main');
+    setState('onShare', false);
+
+    if (isMyShare) SendWSMessage(23, MyPeer.userID);
+}
+
+export const UserNotFree = () => {
+    Notify('info', 'User not free');
+    Decline(false);
+}
+
+export const CloseCalls = () => {
+    Notify('info', 'User decline');
+    Decline(false);
+}
+
+export const GetCalled = async(type, userID, userPeerID, notificationState = {}) => {
     if (MyPeer.conn && type !== 'share') return SendWSMessage(21, userID, 'user not free now');
-    if (type !== 'share') {
-        const stream = await getUserMediaStream(notificationState.type);
-        if (!stream) return SendWSMessage(22, userID, 'user not available');
-        setState('opened', true);
-        setState('stream', stream);
-        setState('notification', notificationState);
-        addVideos({ 'type': 'my', 'stream': stream });
-        MyPeer.opponentPeerID = userPeerID;
-        MyPeer.userID = userID;
-    } else {
-        HandleShareCall('user', call);
-    }
+
+    MyPeer.opponentPeerID = userPeerID;
+    await preCallPreparing(notificationState.type, userID, notificationState, false);
+
+    MyPeer.conn.on('open', myPeerID => {
+        MyPeer.myPeerID = myPeerID;
+    });
+
+    MyPeer.conn.on('call', async(call) => {
+        return onPeerCall(call)
+    });
 }
 
 export const ToCall = async(type, userID) => {
     if (MyPeer.conn) return Notify('fail', Library.getText('common.calls.calls.toCallFail'));
 
-    const stream = await getUserMediaStream(type);
-    if (!stream) return Notify('fail', 'You can not call, bcs you do not give access to camera and micro to WNET!');
-    setState('opened', true);
-    setState('stream', stream);
-    setState('notification', {type: type, whomCalling: 'me'});
-    addVideos({ 'type': 'my', 'stream': stream });
-
-    MyPeer.conn = new Peer();
+    await preCallPreparing(type, userID, {type: type, whomCalling: 'me'}, true);
+  
     MyPeer.conn.on('open', myPeerID => {
         MyPeer.myPeerID = myPeerID;
-        MyPeer.userID = userID;
-        SendWSMessage(20, userID, {
+        SendWSMessage(20, MyPeer.userID, {
             'userID': USER.id,
             'userPeerID': myPeerID,
             'type': 'call',
             'notificationState': {
                 'avatar': USER.avatar,
                 'type': type,
+                'nickname': USER.nickname,
             }
         });
     });
 
     MyPeer.conn.on('call', async(call) => {
-        if (call.metadata.type === 'call') {
-            setState('notification', undefined);
-            MyPeer.opponentPeerID = call.metadata.peerID;
-            call.answer(stream);
-            HandleUserCall(call, stream);
-            peers[call.metadata.peerID] = call;
-        } else HandleShareCall('user', call);
+        return onPeerCall(call)
     });
 }
 
@@ -230,12 +251,13 @@ export default function CallsPopup() {
     const [stream, setStream] = useState();
     const [videos, setVideos] = useState([]);
 
-    addVideos = (...newvideos) => setVideos([...videos, ...newvideos]);
+    addVideo = (video = {}) => setVideos([...videos, video]);
     removeVideo = (type) => setVideos(videos.filter(video => video.type !== type));
-    changeUserPlace = (from = 'main', to = 'user') => {
-        const video = videos.find(video => video.type === from);
-        if (video) video['type'] = to;
-        setVideos([...videos]);
+    changeVideoPlace = (from = 'main', to = 'user') => {
+        setVideos(videos.map(video => {
+            if (video.type === from) video.type = to;
+            return video;
+        }));
     }
 
     setState = (whichState, state) => {
@@ -251,12 +273,12 @@ export default function CallsPopup() {
         <SCalls isFullSize={isFullSize} isOpened={isOpened}>
             {
                 stream && isOpened && notification 
-                    ? <CallNotification notification={notification} Accept={() => Accept(stream)} Decline={() => Decline(stream)}/> 
+                    ? <CallNotification notification={notification} Accept={Accept} Decline={Decline}/> 
                     : null
             }
 
             {
-                videos.length > 0
+                videos.length > 0 && videos.length < 4
                 ? <SVideos>
                     {videos.map((video, index) => <CallVideo isFullSize={isFullSize} key={index} {...video} />)}
                 </SVideos>
@@ -268,11 +290,11 @@ export default function CallsPopup() {
                     ? <CallManaging 
                         stream={stream} 
                         isFullSize={isFullSize}
-                        AudioOnOff={() => AudioVideoOnOff('audio', stream)} 
-                        VideoOnOff={() => AudioVideoOnOff('video', stream)}
-                        isOnShare={isOnShare} setOnScreen={setOnScreen}
-                        setIsFullSize={setIsFullSize} Decline={() => Decline(stream)}
-                        ShareScreen={ShareScreen} StopSharing={StopSharing} 
+                        isOnShare={isOnShare}
+                        AudioVideoOnOff={AudioVideoOnOff}
+                        setIsFullSize={setIsFullSize}
+                        Decline={Decline}
+                        ShareScreen={ShareScreen} StopShare={StopShare} 
                     /> 
                     : null
             }

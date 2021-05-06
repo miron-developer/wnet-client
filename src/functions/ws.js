@@ -1,8 +1,7 @@
 import { HOST, USER } from "constants/constants";
 import { AddNavsNotification } from "common/aside/aside";
-import { CloseCalls } from "common/calls/calls";
-import { GetCalled } from "common/calls/calls";
 import { AddUserNotification } from "common/header/notification/notification";
+import { GetCalled, CloseCalls, UserNotFree, StopShare } from "common/calls/calls";
 import { AppendMessages } from "messenger/messenger-chat";
 
 let wss = null;
@@ -22,12 +21,15 @@ const selectAct = (data) => {
     if (data.msgType === 12) return; // stop typing
 
     // audio&video calls
-    if (data.msgType === 20) return GetCalled(data.body.type, data.body?.call, data.body.userID, data.body.userPeerID, data.body?.notificationState);
-    if (data.msgType === 21) return; // user not free
+    if (data.msgType === 20) return GetCalled(data.body?.type, data.body?.userID, data.body?.userPeerID, data.body?.notificationState);
+    if (data.msgType === 21) return UserNotFree();
     if (data.msgType === 22) return CloseCalls();
+    if (data.msgType === 22) return StopShare(false);
 }
 
 export const CloseWSConnection = () => wss ? wss.close() : null;
+
+export const IsWSOpen = () => wss ? true : false;
 
 export const CreateWSConnection = () => {
     wss = new WebSocket('wss://' + HOST + '/ws/');
@@ -45,7 +47,6 @@ export const CreateWSConnection = () => {
 
     wss.onmessage = e => {
         const data = JSON.parse(e.data);
-        console.log('data', data);
         selectAct(data);
     }
 }

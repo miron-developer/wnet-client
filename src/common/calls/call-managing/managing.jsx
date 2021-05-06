@@ -75,7 +75,7 @@ const GetState = (type, stream) => {
     return track.enabled;
 }
 
-export default function CallManaging({stream, isFullSize, isOnShare, setOnScreen, AudioOnOff, VideoOnOff, ShareScreen, StopSharing, setIsFullSize, Decline}) {
+export default function CallManaging({stream, isFullSize, isOnShare, AudioVideoOnOff, ShareScreen, StopShare, setIsFullSize, Decline}) {
     const [isOnVideo, setOnVideo] = useState(GetState('video', stream));
     const [isOnAudio, setOnAudio] = useState(GetState('audio', stream));
 
@@ -85,22 +85,19 @@ export default function CallManaging({stream, isFullSize, isOnShare, setOnScreen
                 <OneManagingBtn 
                     icon="desktop"
                     isOn={isOnShare}
-                    onClick={async() => {
-                        const success = isOnShare ? StopSharing() : await ShareScreen();
-                        if (success) setOnScreen(!isOnShare);
-                    }} 
+                    onClick={async() => isOnShare ? StopShare() : await ShareScreen()}
                 />
 
                 <OneManagingBtn 
                     icon="video-camera" 
                     isOn={isOnVideo}
-                    onClick={() => VideoOnOff() || setOnVideo(!isOnVideo)} 
+                    onClick={() => AudioVideoOnOff('video', stream) || setOnVideo(!isOnVideo)} 
                 />
 
                 <OneManagingBtn
                     icon="microphone"
                     isOn={isOnAudio}
-                    onClick={() => AudioOnOff() || setOnAudio(!isOnAudio)}
+                    onClick={() => AudioVideoOnOff('audio', stream) || setOnAudio(!isOnAudio)}
                 />
 
                 <OneManagingBtn
