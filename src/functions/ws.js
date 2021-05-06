@@ -24,7 +24,7 @@ const selectAct = (data) => {
     if (data.msgType === 20) return GetCalled(data.body?.type, data.body?.userID, data.body?.userPeerID, data.body?.notificationState);
     if (data.msgType === 21) return UserNotFree();
     if (data.msgType === 22) return CloseCalls();
-    if (data.msgType === 22) return StopShare(false);
+    if (data.msgType === 23) return StopShare(false);
 }
 
 export const CloseWSConnection = () => wss?.close();
@@ -52,6 +52,6 @@ export const CreateWSConnection = () => {
 }
 
 export const SendWSMessage = (msgType = 1, receiver = 0, body) => {
-    if (body === undefined || wss === null) return { 'err': 'do not sended' };
+    if (wss === null) return { 'err': 'do not sended' };
     wss.send(JSON.stringify({ "msgType": msgType, "addresser": USER.id.toString(), "receiver": "".concat(receiver), "body": body }));
 }

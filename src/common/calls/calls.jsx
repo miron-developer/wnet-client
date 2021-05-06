@@ -100,35 +100,27 @@ const getUserMediaStream = async(type) => {
 }
 
 const HandleShareCall = (type, call, stream = {}) => {
-    const handleStream = (shareStream) => {
+    const handleStream = (shareStream, isMy = true) => {
         MyPeer.shareStream = shareStream;
         peers['share'] = call;
         setState('onShare', true);
         addVideo({ 'type': 'main', 'stream': shareStream });
         
         shareStream.getVideoTracks()[0].onended = StopShare;
-        call.on('close', StopShare)
+        call.on('close', StopShare);
     }
 
-    console.log(type, call, stream);
-    changeVideoPlace('main', 'user');
-    
-    if (type === 'user') {
-        return call.on('stream', userShareStream => {
-            handleStream(userShareStream);
-        });
+    changeVideoPlace('main', 'user');    
+    if (type === 'my') {
+        return handleStream(stream);
     }
-    handleStream(stream);
+    call.answer(new MediaStream());
+    return call.on('stream', userShareStream => handleStream(userShareStream));
 }
 
 const HandleUserCall = (call) => {
-    call.on('stream', userVideoStream => {
-        addVideo({ 'type': 'main', 'stream': userVideoStream });
-    });
-
-    call.on('close', () => {
-        Decline(false);
-    });
+    call.on('stream', userVideoStream => addVideo({ 'type': 'main', 'stream': userVideoStream }));
+    call.on('close', () => Decline(false));
 }
 
 const preCallPreparing = async(type, userID, notificationState, isMeCalling = false) => {
@@ -183,18 +175,17 @@ const ShareScreen = async() => {
     if (MyPeer.shareStream) return Notify('fail', 'you are already share');
     const stream = await getScreenShareStream();
     const call = MyPeer.conn.call(MyPeer.opponentPeerID, stream, { metadata: {'peerID': MyPeer.myPeerID, 'type': 'share'} });
-    return HandleShareCall('my', call, stream) || true;
+    return HandleShareCall('my', call, stream);
 }
 
-export const StopShare = async(isMyShare = true) => {
+export const StopShare = async() => {
     if (!MyPeer.shareStream) return;
     MyPeer.shareStream.getTracks().forEach(track => track.stop());
     MyPeer.shareStream = undefined;
     await removeVideo('main')
     changeVideoPlace('user', 'main');
     setState('onShare', false);
-
-    if (isMyShare) SendWSMessage(23, MyPeer.userID);
+    SendWSMessage(23, MyPeer.userID);
 }
 
 export const UserNotFree = () => {
