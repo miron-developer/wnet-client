@@ -53,8 +53,10 @@ const ZeroMyPeer = () => {
     MyPeer.myPeerID = undefined;
     MyPeer.opponentPeerID = undefined;
     MyPeer.userID = undefined;
-    if (MyPeer.myStream) MyPeer.myStream.getTracks().forEach(track => track.stop());
-    if (MyPeer.shareStream) MyPeer.shareStream.getTracks().forEach(track => track.stop());
+    if (MyPeer.myStream) MyPeer.myStream.getTracks().forEach(t => t.stop());
+    if (MyPeer.shareStream) MyPeer.shareStream.getTracks().forEach(t => t.stop());
+    MyPeer.myStream = undefined;
+    MyPeer.shareStream = undefined;
     Object.values(peers).forEach(call => call.close());
 }
 
@@ -104,7 +106,7 @@ const HandleShareCall = (type, call, stream = {}) => {
         addVideo({ 'type': 'main', 'stream': shareStream });
         
         shareStream.getVideoTracks()[0].onended = StopShare;
-        call.on('close', StopShare);    
+        call.on('close', StopShare)
     }
 
     console.log(type, call, stream);
@@ -120,7 +122,6 @@ const HandleShareCall = (type, call, stream = {}) => {
 
 const HandleUserCall = (call) => {
     call.on('stream', userVideoStream => {
-        console.log('on stream add');
         addVideo({ 'type': 'main', 'stream': userVideoStream });
     });
 
@@ -147,13 +148,12 @@ const preCallPreparing = async(type, userID, notificationState, isMeCalling = fa
 }
 
 const onPeerCall = (call) => {
-    console.log('get peer called', call);
     if (call.metadata.type === 'call') {
         peers[call.metadata.peerID] = call;
         MyPeer.opponentPeerID = call.metadata.peerID;
         call.answer(MyPeer.myStream);
         setState('notification', undefined);
-        HandleUserCall(call, MyPeer.myStream);
+        HandleUserCall(call);
     } else HandleShareCall('user', call);
 }
 
@@ -171,23 +171,25 @@ const Decline = (isMeDecline = true) => {
     setState('opened', false);
     setState('videos', []);
     setState('stream', undefined);
+    setState('onShare', false);
     
     if (MyPeer.userID && isMeDecline) SendWSMessage(22, MyPeer.userID, 'user disconnected');
     ZeroMyPeer();
 }
 
 const ShareScreen = async() => {
-    if (!MyPeer.conn || !MyPeer.opponentPeerID || MyPeer.shareStream) return Notify('fail', Library.getText('common.calls.calls.shareFail'));
+    if (!MyPeer.conn || !MyPeer.opponentPeerID) return Notify('fail', Library.getText('common.calls.calls.shareFail'));
+    if (MyPeer.shareStream) return Notify('fail', 'you are already share');
     const stream = await getScreenShareStream();
     const call = MyPeer.conn.call(MyPeer.opponentPeerID, stream, { metadata: {'peerID': MyPeer.myPeerID, 'type': 'share'} });
     return HandleShareCall('my', call, stream) || true;
 }
 
-export const StopShare = (isMyShare = true) => {
+export const StopShare = async(isMyShare = true) => {
     if (!MyPeer.shareStream) return;
     MyPeer.shareStream.getTracks().forEach(track => track.stop());
     MyPeer.shareStream = undefined;
-    removeVideo('main')
+    await removeVideo('main')
     changeVideoPlace('user', 'main');
     setState('onShare', false);
 
@@ -254,7 +256,7 @@ export default function CallsPopup() {
     addVideo = (video = {}) => {
         if (!videos.find(v => v.type === video.type)) setVideos([...videos, video]);
     }
-    removeVideo = (type) => setVideos(videos.filter(video => video.type !== type));
+    removeVideo = async(type) => setVideos(videos.filter(video => video.type !== type));
     changeVideoPlace = (from = 'main', to = 'user') => {
         setVideos(videos.map(video => {
             if (video.type === from) video.type = to;
