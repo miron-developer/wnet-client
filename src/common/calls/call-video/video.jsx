@@ -13,6 +13,11 @@ const SVideoWrapper = styled.div`
         if (props.isFullSize && props.type === 'main') return '80vh';
         return '100%';
     }};
+    max-height: ${props => {
+        if (props.isFullSize && props.type !== 'main') return '40vh';
+        if (props.isFullSize && props.type === 'main') return '80vh';
+        return '80vh';
+    }};
 
     & video {
         width: 100%;
