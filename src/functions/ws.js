@@ -24,7 +24,7 @@ const selectAct = (data) => {
     if (data.msgType === 20) return GetCalled(data.body?.type, data.body?.userID, data.body?.userPeerID, data.body?.notificationState);
     if (data.msgType === 21) return UserNotFree();
     if (data.msgType === 22) return CloseCalls();
-    if (data.msgType === 23) return StopShare(false);
+    if (data.msgType === 23) return StopShare();
 }
 
 export const CloseWSConnection = () => wss?.close();

@@ -18,6 +18,7 @@ const SVideoWrapper = styled.div`
         if (props.isFullSize && props.type === 'main') return '80vh';
         return '80vh';
     }};
+    width: 100%;
 
     & video {
         width: 100%;

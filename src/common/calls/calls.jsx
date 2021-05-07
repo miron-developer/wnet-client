@@ -132,6 +132,7 @@ const preCallPreparing = async(type, userID, notificationState, isMeCalling = fa
     }
 
     MyPeer.conn = new Peer();
+    if (!MyPeer.conn) return SendWSMessage(22, userID);
     MyPeer.myStream = stream;
     MyPeer.userID = userID;
     setState('opened', true);
@@ -199,7 +200,7 @@ export const CloseCalls = () => {
 }
 
 export const GetCalled = async(type, userID, userPeerID, notificationState = {}) => {
-    if (MyPeer.conn && type !== 'share') return SendWSMessage(21, userID, 'user not free now');
+    if (MyPeer.conn) return SendWSMessage(21, userID, 'user not free now');
 
     MyPeer.opponentPeerID = userPeerID;
     await preCallPreparing(notificationState.type, userID, notificationState, false);
@@ -245,9 +246,7 @@ export default function CallsPopup() {
     const [stream, setStream] = useState();
     const [videos, setVideos] = useState([]);
 
-    addVideo = (video = {}) => {
-        if (!videos.find(v => v.type === video.type)) setVideos([...videos, video]);
-    }
+    addVideo = (video = {}) => !videos.find(v => v.type === video.type) ? setVideos([...videos, video]) : null;
     removeVideo = async(type) => setVideos(videos.filter(video => video.type !== type));
     changeVideoPlace = (from = 'main', to = 'user') => {
         setVideos(videos.map(video => {
