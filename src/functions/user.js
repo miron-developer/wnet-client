@@ -59,10 +59,14 @@ export const UserOffline = async() => {
 }
 
 // send to server signal about sign out
-export const SignOut = async() => {
+export const SignOut = async(history) => {
+    Notify('info', 'Sign out...');
     const res = await POSTRequestWithParams("/sign/out");
     if (res.err !== "ok") return false;
-    return await UserOffline();
+    const isSignOuted = await UserOffline();
+    if (!isSignOuted) return;
+    history.push('/sign/in');
+    Notify('success', 'Sign outed!');
 }
 
 /**

@@ -40,7 +40,7 @@ const GListItem = ({ isChoosen, nickname, title, avatar, onClick }) => {
 
     return (
         <SChooseListItem isChoosen={isChoosen} onClick={() => onClick(isChoosen)}>
-            <Avatar avatar={avatar} isNeedBorder={false} size="" />
+            <Avatar avatar={avatar} size="" />
             <span>{name}</span>
         </SChooseListItem>
     )

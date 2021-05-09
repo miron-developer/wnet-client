@@ -64,7 +64,7 @@ const OneCall = ({isUser, status, icon, onClick}) => {
 export default function ChatHeader({isUser, status, avatar, name, id}) {
     return (
         <SChatHeader>
-            <Avatar isUser={isUser} avatar={avatar} status={status} isNeedBorder={false} size="5rem" />
+            <Avatar isUser={isUser} avatar={avatar} status={status} size="5rem" />
 
             <SChatName>{name}</SChatName>
 

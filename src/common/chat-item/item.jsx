@@ -85,7 +85,7 @@ export default function Chat({id, receiverUserID, receiverGroupID, userAvatar, n
     
     return (
         <SChat to={'/'+Library.getText('common.routes.messenger')+'/'+chatID} >
-            <Avatar isUser={isUser} avatar={avatar} status={status} isNeedBorder={false} />
+            <Avatar isUser={isUser} avatar={avatar} status={status} />
 
             <SMessengerBody>
                 <SMessengerName>{name}</SMessengerName>

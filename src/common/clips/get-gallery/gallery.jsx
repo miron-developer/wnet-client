@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 
 import { Library } from "constants/language";
 import { CheckPermissions } from "functions/effects";
+import { RandomKey } from "functions/content";
 import { ClosePopup } from "common/popup/popup";
+import { Notify } from "common/app-notification/notification";
 
 import styled from "styled-components";
 
@@ -64,9 +66,23 @@ const SRecorderActionsBtn = styled(SActionGetBtn)`
     background: black;
 `;
 
-let blob = {};
-let chunks = [];
-const options = { mimeType: 'video/webm' };
+const recorderContext = {
+    blob: {},
+    chunks: [],
+    recentSec: 3,
+    recorder: undefined,
+    imageCapture: undefined,
+    mediaOptions: { mimeType: 'video/webm' },
+}
+
+const localLib = {
+    'notHaveRecorderData': Library.getText('common.clips.gallery.notHaveRecordedData'),
+    'areRecording': Library.getText('common.clips.gallery.areRecording'),
+    'haveRecorderData': Library.getText('common.clips.gallery.haveRecordedData'),
+    'notGrantedPermission': Library.getText('common.clips.gallery.notGrantedPermissions'),
+    'save': Library.getText('common.clips.gallery.save'),
+    'remove': Library.getText('common.clips.gallery.remove'),
+}
 
 const updateStreams = (newStream, updState) => {
     if (window.stream) window.stream.getTracks().forEach(t => t.stop());
@@ -74,17 +90,17 @@ const updateStreams = (newStream, updState) => {
     updState(newStream);
 }
 
-const clearDatas = (setFinished, setText) => {
-    blob = {};
-    chunks = [];
+const clearDatas = (setFinished) => {
+    recorderContext.blob = {};
+    recorderContext.chunks = [];
+    recorderContext.recentSec = 3;
     setFinished(false);
-    setText('');
 }
 
-const save = async(videoRef, type, addToPlash, setFinished, setText) => {
-    if (!blob || blob.size === 0 || !blob.size) return setText(Library.getText('common.clips.gallery.notHaveRecordedData'));
-    const file = blob;
-    file.name = 'recorder-' + type + Math.round(Math.random() * 10000);
+const save = async(videoRef, type, addToPlash, setFinished) => {
+    if (!recorderContext.blob || recorderContext.blob.size === 0 || !recorderContext.blob.size) return Notify('fail', localLib.notHaveRecordedData);
+    const file = recorderContext.blob;
+    file.name = 'recorder-' + type + Math.round(RandomKey());
     const filetype = file.type !== "" ? file.type.split('/')[0] : "video";
 
     addToPlash({
@@ -95,117 +111,135 @@ const save = async(videoRef, type, addToPlash, setFinished, setText) => {
     })
 
     videoRef.current = null;
-    clearDatas(setFinished, setText);
+    clearDatas(setFinished);
     ClosePopup();
 }
 
-const isStoppedRecording = async(refDOM, isPhoto, stream, imageCapture, recorder) => {
+const stopRecording = async(refDOM, isPhoto, stream) => {
     refDOM.srcObject = null;
     refDOM.src = null
     if (isPhoto) {
-        blob = await imageCapture.takePhoto();
-        refDOM.poster = URL.createObjectURL(blob);
+        recorderContext.blob = await recorderContext.imageCapture.takePhoto();
+        refDOM.poster = URL.createObjectURL(recorderContext.blob);
     } else {
-        blob = new Blob(chunks, options);
-        refDOM.src = URL.createObjectURL(blob);
-        recorder.stop();
+        recorderContext.blob = new Blob(recorderContext.chunks, recorderContext.mediaOptions);
+        refDOM.src = URL.createObjectURL(recorderContext.blob);
+        recorderContext.recorder.stop();
     }
     stream.getTracks().forEach(t => t.stop());
 }
 
-const isStartedRecording = (isPhoto, stream, setCapture, setRecorder) => {
+const startRecording = (isPhoto, stream) => {
     if (isPhoto) {
         const track = stream.getVideoTracks()[0];
-        setCapture(new ImageCapture(track));
+        recorderContext.imageCapture = new ImageCapture(track);
     } else {
-        const newRecorder = new MediaRecorder(stream, options);
-        newRecorder.addEventListener('dataavailable', e => e.data && e.data.size > 0 ? chunks.push(e.data) : null);
+        const newRecorder = new MediaRecorder(stream, recorderContext.mediaOptions);
+        newRecorder.addEventListener('dataavailable', e => e.data && e.data.size > 0 ? recorderContext.chunks.push(e.data) : null);
         newRecorder.start(10);
-        setRecorder(newRecorder);
+        recorderContext.recorder = newRecorder;
     }
 }
 
-const changeMode = (isRec, isFinished, value, upd, updNodeText) => {
-    if (isRec) return updNodeText(Library.getText('common.clips.gallery.areRecording'));
-    if (isFinished && (!blob || blob.size > 0)) return updNodeText(Library.getText('common.clips.gallery.haveRecordedData'));
+const changeMode = (isRec, isFinished, value, upd) => {
+    if (isRec) return Notify('info', localLib.areRecording);
+    if (isFinished && (!recorderContext.blob || recorderContext.blob.size > 0)) return Notify('info', localLib.haveRecorderData);
     return upd(value);
+}
+
+const isAvailable = (stream, isRec) => {
+    if (!stream) return;
+    if (recorderContext.blob.size > 0 && !isRec) return Notify('info', localLib.haveRecorderData);
+    return true;
+}
+
+const getShotIcon = (isPhoto, isRec) => {
+    if (isPhoto) return 'circle';
+    if (isRec) return 'stop';
+    return 'play';
 }
 
 export default function GetPhotoAndVideo({ addToPlash }) {
     const [isRec, setIsRec] = useState(false);
     const [isFinished, setFinished] = useState(false);
-    const [stream, setStream] = useState();
-    const [recorder, setRecorder] = useState();
-    const [imageCapture, setCapture] = useState();
     const [isPhoto, setPhoto] = useState(true);
-    const [noteText, setText] = useState('');
+    const [stream, setStream] = useState();
 
     const videoRef = useRef(null);
     const type = isPhoto ? 'photo' : 'video';
 
-    const startStopRec = async() => {
-        if (!stream) return;
-        if (blob.size > 0 && !isRec) return setText(Library.getText('common.clips.gallery.haveRecordedData'));
+    const takePhoto = () => {
+        if (!isAvailable(stream, isRec)) return;
+        startRecording(isPhoto, stream);
+        setIsRec(true);
 
-        if (isRec) await isStoppedRecording(videoRef.current, isPhoto, stream, imageCapture, recorder);
-        else isStartedRecording(isPhoto, stream, setCapture, setRecorder);
+        const interID = setInterval(() => {
+            if (recorderContext.recentSec === 0) {
+                setFinished(true);
+                setIsRec(false)
+                return clearInterval(interID);
+            }
+            Notify('info', recorderContext.recentSec);
+            recorderContext.recentSec--;
+        }, 1000);
+        setTimeout(async() => await stopRecording(videoRef.current, isPhoto, stream), 3000);
+    }
 
+    const startStopRecVideo = async() => {
+        if (!isAvailable(stream, isRec)) return;
+        
+        if (isRec) await stopRecording(videoRef.current, isPhoto, stream);
+        else startRecording(isPhoto, stream);
         setIsRec(!isRec);
         setFinished(true);
     }
 
     useEffect(() => {
-        if (videoRef.current && !isRec) {
+        if (videoRef.current && !isRec && !isFinished) {
             CheckPermissions(['camera', 'microphone']).then(isGranted => {
-                if (!isGranted) return setText(Library.getText('common.clips.gallery.notGrantedPermissions'));
+                if (!isGranted) return Notify('fail', localLib.notGrantedPermission);
                 navigator.mediaDevices.getUserMedia({video: true, audio: true})
-                .then(cur_stream => {
-                    if (!isFinished) videoRef.current.srcObject = cur_stream;
-                    updateStreams(cur_stream, setStream);
-                });
+                    .then(cur_stream => {
+                        if (!isFinished) videoRef.current.srcObject = cur_stream;
+                        updateStreams(cur_stream, setStream);
+                    });
             })
         }
-    }, [isFinished, videoRef]);
+    }, [isFinished, isRec, videoRef]);
 
     return (
         <SRecorderWrapper>
             <SRecorderCamera>
-                <video ref={videoRef} autoPlay controls></video>
+                <video ref={videoRef} autoPlay controls={!isPhoto} />
             </SRecorderCamera>
 
             <SRecorderActions>
                 <SActionsWrapper>
-                    <SActionGetBtn isActive={isPhoto} onClick={() => changeMode(isRec, isFinished, true, setPhoto, setText)}>
+                    <SActionGetBtn isActive={isPhoto} onClick={() => changeMode(isRec, isFinished, true, setPhoto)}>
                         <span><i className="fa fa-camera" aria-hidden="true"></i></span>
                         <span>{Library.getText('common.routes.photo')}</span>
                     </SActionGetBtn>
 
-                    <SActionGetBtn isActive={!isPhoto} onClick={() => changeMode(isRec, isFinished, false, setPhoto, setText)} >
+                    <SActionGetBtn isActive={!isPhoto} onClick={() => changeMode(isRec, isFinished, false, setPhoto)} >
                         <span><i className="fa fa-video-camera" aria-hidden="true"></i></span>
                         <span>{Library.getText('common.routes.video')}</span>
                     </SActionGetBtn>
                 </SActionsWrapper>
 
                 <div>
-                    <SRecorderActionsBtn onClick={startStopRec} >
-                        {
-                            isRec
-                            ? <i className="fa fa-stop" aria-hidden="true"></i>
-                            : <i className="fa fa-play" aria-hidden="true"></i>
-                        }
+                    <SRecorderActionsBtn onClick={isPhoto ? takePhoto : startStopRecVideo} >
+                        <i className={"fa fa-"+getShotIcon(isPhoto, isRec)} aria-hidden="true"></i>
                     </SRecorderActionsBtn>
-
-                    <span>{noteText}</span>
                 </div>
 
                 <SActionsWrapper>
-                    <SActionResBtn isSave={true} onClick={() => save(videoRef, type, addToPlash, setFinished, setText)} >
+                    <SActionResBtn isSave={true} onClick={() => save(videoRef, type, addToPlash, setFinished)} >
                         <span><i className="fa fa-floppy-o" aria-hidden="true"></i></span>
-                        <span>{Library.getText('common.clips.gallery.save')}</span>
+                        <span>{localLib.save}</span>
                     </SActionResBtn>
-                    <SActionResBtn isSave={false} onClick={() => clearDatas(setFinished, setText)} >
+                    <SActionResBtn isSave={false} onClick={() => clearDatas(setFinished)} >
                         <span><i className="fa fa-trash" aria-hidden="true"></i></span>
-                        <span>{Library.getText('common.clips.gallery.remove')}</span>
+                        <span>{localLib.remove}</span>
                     </SActionResBtn>
                 </SActionsWrapper>
             </SRecorderActions>

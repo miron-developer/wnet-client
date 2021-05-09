@@ -28,7 +28,7 @@ export default function ResultVideo({id, fName, lName, avatar, status, title, pr
     return (
         <Link width='calc(50% - 4rem)' to={`/video/${id}`} >
             <SVideoData>
-                <Avatar isUser={false} avatar={avatar} status={status} size="" isNeedBorder={false} />
+                <Avatar isUser={false} avatar={avatar} status={status} size="" />
                 <SVideoDataWrapper className="result-item-title">
                     <span className="video-data-username">{name}</span>
                     <span className="video-data-title">{title}</span>

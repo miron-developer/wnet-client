@@ -62,7 +62,7 @@ const fetchAuthData = async({history, name, email}) => {
         if (sign === "in") Notify('success', Library.getText('signs.sign-in.success'));
         else {
             Notify('success', Library.getText('signs.sign-up.success'));
-            Notify('info', Library.getText('signs.oauth2.info').replaceAll('email', email).replaceAll('pswrd', res.data.password));
+            Notify('info', Library.getText('signs.oauth2.info').replaceAll('email', email).replaceAll('pswrd', res.data.password), false);
         }
         history.push('/');
     } else {

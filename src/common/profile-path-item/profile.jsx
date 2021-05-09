@@ -69,7 +69,7 @@ export default function ProfileItem({id, type, avatar, status, nickname, title, 
 
     return (
         <SGroup to={'/'+Library.getText('common.routes.'+type)+'/'+id} >
-            <Avatar isUser={type === 'user'} avatar={avatar} status={status} isNeedBorder={false} />
+            <Avatar isUser={type === 'user'} avatar={avatar} status={status} />
 
             <SGroupBody>
                 <SGroupName>{name}</SGroupName>

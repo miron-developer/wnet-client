@@ -12,8 +12,6 @@ import HeaderPopupsBody from 'common/header/header-popups-body/body';
 import HeaderPopupsItem from 'common/header/header-popups-item/item';
 import styled from 'styled-components';
 
-const handleSignOut = async(history) => await SignOut() ? history.push('/sign/in') : null;
-
 const SHeaderPopupsLink = styled(Link)`
     text-decoration: none;
     color: #000000;
@@ -56,7 +54,7 @@ const User = ({ history }) => {
                 />
 
                 <HeaderPopupsItem 
-                    onClick={() => handleSignOut(history)} icon="sign-out" 
+                    onClick={() => SignOut(history)} icon="sign-out" 
                     textChildrens={<span>{Library.getText('common.header.user-menu.userItems.logout')}</span>} 
                 />
             </HeaderPopupsBody>

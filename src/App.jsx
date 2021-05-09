@@ -34,9 +34,7 @@ const App = ({history}) => {
 
 	useEffect(()=> {
 		if (USER.status === "online") {
-			if (isSign) {
-				history.push("/");
-			}
+			if (isSign) history.push("/");
 		} else if (!CheckIsExceptionPath()) {
 			history.push('/'+Library.getText('common.routes.signs.sign')+'/'+Library.getText('common.routes.signs.in'));
 		}

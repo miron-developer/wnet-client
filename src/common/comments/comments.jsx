@@ -139,7 +139,7 @@ export const OneComment = ({
         <SCommentWrapper>
             <SComment>
                 <SCommentUser>
-                    <Avatar avatar={avatar} isNeedBorder={false} size="" />
+                    <Avatar avatar={avatar} size="" />
                     <span>{lName + ' ' + fName}</span>
                 </SCommentUser>
 

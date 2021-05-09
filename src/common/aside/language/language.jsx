@@ -7,12 +7,10 @@ import styled from "styled-components";
 const SLang = styled.div`
     margin: 1rem 0;
     padding: 1rem;
+    width: 100%;
+    color: var(--onHoverColor);
     border-radius: 5px;
     background: #ffffff21;
-`;
-
-const STitle = styled.span`
-    color: var(--onHoverColor);
 `;
 
 const SLangsWrapper = styled.div`
@@ -30,7 +28,7 @@ const SOneLang = styled.span`
     cursor: pointer;
 `;
 
-const onClick = short => {
+const setLang = short => {
     window.localStorage.setItem('lang', short);
     Library.lang = short;
     
@@ -38,18 +36,16 @@ const onClick = short => {
     window.location.replace(pathOnNewLang);
 }
 
-const OneLang = ({lang, short, active}) => <SOneLang isActive={short===active} onClick={()=>onClick(short)}>{lang}</SOneLang>
+const OneLang = ({lang, short}) => <SOneLang isActive={short===Library.lang} onClick={()=>setLang(short)}>{lang}</SOneLang>
 
 export const Language = () => {
-    const active = Library.lang;
-
     return (
         <SLang>
-            <STitle>Language:</STitle>
+            <span>Language:</span>
             <SLangsWrapper>
-                <OneLang short="en" active={active} lang="English"   />
-                <OneLang short="ru" active={active} lang="Русский"   />
-                <OneLang short="kz" active={active} lang="Казахский" />
+                <OneLang short="en" lang="English"   />
+                <OneLang short="ru" lang="Русский"   />
+                <OneLang short="kz" lang="Казахский" />
             </SLangsWrapper>
         </SLang>
     )

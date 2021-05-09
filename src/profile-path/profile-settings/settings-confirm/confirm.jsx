@@ -38,12 +38,9 @@ const ConfirmChange = ({history}) => {
     }
     const onFail = (err) => Notify('fail', err);
 
-    
     return (
         <SSettingsBody>
-            <STitle>
-                Confirm change
-            </STitle>
+            <STitle>Confirm change</STitle>
 
             <form action="/e/settings/c" onSubmit={async(e)=> {
                 afterStyles = await SubmitFormData(e, afterStyles, fields, undefined, onSuccess, onFail);

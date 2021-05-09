@@ -1,12 +1,13 @@
+import { RandomKey } from "functions/content";
 import { PopupOpen } from "common/popup/popup";
 
 import styled from "styled-components";
 
 const SFilesPlash = styled.div`
-    background: #000000ad;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    background: #000000ad;
 `;
 
 const SClippedFileWrapper = styled.div`
@@ -18,10 +19,10 @@ const SClippedFileWrapper = styled.div`
     flex-direction: ${props => props.type === 'file' ? 'row' : 'column'};
     align-items: center;
     justify-content: ${props => props.type === 'file' ? 'space-around' : 'space-between'};
+    color: var(--onHoverColor);
     background: #000000ad;
     border-radius: 10px;
     cursor: pointer;
-    color: var(--onHoverColor);
 `;
 
 const SClippedFileSrc = styled.div`
@@ -51,7 +52,7 @@ export default function ClippedFiles({ files = [] }) {
         <SFilesPlash>
             {
                 files.map(
-                    file => <RenderClippedFile key={Math.random()*Math.random()} {...file} onClick={() => PopupOpen(RenderClippedFile, {...file, 'size': '100%'})} />
+                    file => <RenderClippedFile key={RandomKey()} {...file} onClick={() => PopupOpen(RenderClippedFile, {...file, 'size': '100%'})} />
                 )
             }
         </SFilesPlash>

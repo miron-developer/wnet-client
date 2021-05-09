@@ -36,7 +36,7 @@ export default function ProfileItem({type, id, avatar, status, fName, lName, tit
     return (
         <SProfileItemWrapper to={"/"+Library.getText('common.routes.'+type)+"/"+id} onClick={ClosePopup} >
             <SProfileItem>
-                <Avatar isUser={isUser} avatar={avatar} status={status} isNeedBorder={false} />
+                <Avatar isUser={isUser} avatar={avatar} status={status} />
 
                 <SProfileItemName>{name}</SProfileItemName>
             </SProfileItem>

@@ -11,6 +11,7 @@ const SAppNotifications = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-end;
+    z-index: 20;
 `
 
 const SAppNotificationWrapper = styled.div`
@@ -19,7 +20,7 @@ const SAppNotificationWrapper = styled.div`
     justify-content: space-between;
     width: max-content;
     max-width: 50vw;
-    margin: 1rem;
+    margin: .5rem;
     padding: 1rem;
     border-radius: 5px;
     background: ${props => `var(${props.color})`};
@@ -39,16 +40,16 @@ const SCloseNotification = styled.div`
     cursor: pointer;
 `;
 
-let add;
+let add = () => {};
 let removeNotification = id => {};
 let interID;
 
-export const Notify = (type, text) => {
-    if (add) return add(type, text);
+export const Notify = (type, content, isAutoClose) => {
+    if (add.length !== 0) return add(type, content, isAutoClose);
     interID = setInterval(() => {
-        if (add !== undefined) {
+        if (add.length !== 0) {
             clearInterval(interID);
-            add(type, text);
+            add(type, content, isAutoClose);
         }
     }, 0);
 }
@@ -59,14 +60,16 @@ const colors = {
     'info': '--infoBG',
 }
 
-const Notification = ({ id = 0, type = "fail", text = "" }) => {
-    setTimeout(() => {
-        if (type !== "info") removeNotification(id);
-    }, 10000);
+const Notification = ({ id = 0, type = "fail", content, isAutoClose = true }) => {
+    if (!content) return null;
+    if (isAutoClose) setTimeout(() => removeNotification(id), 5000);
+
+    let noteContent = content
+    if (content instanceof Function) noteContent = content(); 
 
     return (
         <SAppNotificationWrapper color={colors[type]}>
-            <span>{text}</span>
+            <div className="notification-content">{noteContent}</div>
             <SCloseNotification onClick={()=>removeNotification(id)}>
                 <i className="fa fa-times" aria-hidden="true"></i>
             </SCloseNotification>
@@ -74,23 +77,14 @@ const Notification = ({ id = 0, type = "fail", text = "" }) => {
     )
 }
 
-const useNotifications = () => {
+export default function Notifications() {
     const [ntfs, setNTFS] = useState([]);
 
     removeNotification = id => setNTFS(ntfs.filter(item => item.props.id !== id));
-    add = (type, text)  => {
+    add = (type, content, isAutoClose)  => {
         const key = RandomKey();
-        setNTFS([...ntfs, <Notification key={key} id={key} type={type} text={text} />]);
+        setNTFS([...ntfs, <Notification key={key} id={key} type={type} content={content} isAutoClose={isAutoClose} />]);
     }
-    
-    return {
-        ntfs,
-        setNTFS
-    };
-}
-
-export default function Notifications() {
-    const { ntfs } = useNotifications();
 
     return <SAppNotifications>{ntfs}</SAppNotifications>;
 }

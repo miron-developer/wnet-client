@@ -8,16 +8,16 @@ const get = (src, path) => {
 }
 
 export const Library = {
-    'comment': {
-        'notLoadComment': {
-            'ru': 'Не удалось загрузить комментарий!',
-            'en': 'Can not load comment!',
-            'kz': 'Комментарий жуктелмеди!',
+    'general': {
+        'notLoad': {
+            'ru': 'Не удалось загрузить SOMETHING!',
+            'en': 'Can not load SOMETHING!',
+            'kz': 'SOMETHING жуктелмеди!',
         },
-        'notSaveComment': {
-            'ru': 'Не удалось сохранить комментарий!',
-            'en': 'Can not save comment!',
-            'kz': 'Комментарий сакталмады!',
+        'notSave': {
+            'ru': 'Не удалось сохранить SOMETHING!',
+            'en': 'Can not save SOMETHING!',
+            'kz': 'SOMETHING сакталмады!',
         }
     },
     'common': {
@@ -81,6 +81,11 @@ export const Library = {
                 }
             },
             'calls': {
+                'notPermission': {
+                    'ru': 'Вы не можете звонить, т.к. не дали WNET разрешение на камеру и микрофон!',
+                    'en': 'You can not call, bcs you do not give access to camera and micro to WNET!',
+                    'kz': 'Сиз конырау шала алмайсыз, себеби WNET-ке камера мен микрофонга руксат берген жоксыз!',
+                },
                 'audioVideoOnOffFail': {
                     'ru': 'Не удалось вкл/откл. Нет звонка',
                     'en': 'Can not change mode. No call - nothing to change',
@@ -91,18 +96,33 @@ export const Library = {
                     'en': 'Can not share! Share to nobody?',
                     'kz': 'Экранмен болису болмады. Ешкиммен болисесин ба?',
                 },
+                'youAlreadyShare': {
+                    'ru': 'Не удалось поделиться экраном. Вы уже делитесь',
+                    'en': 'Can not share! You already share',
+                    'kz': 'Экранмен болису болмады. Сиз болисип жатырсыз',
+                },
                 'toCallFail': {
                     'ru': 'Ты не сможешь поделиться на 2!',
                     'en': 'You can not be divided to 2!',
                     'kz': '2-ге болине алмайсын!',
-                }
+                },
+                'userNotFree': {
+                    'ru': 'Пользователь недоступен!',
+                    'en': 'User not available!',
+                    'kz': 'Абонент бос емес!',
+                },
+                'userDecline': {
+                    'ru': 'Пользователь отклонил!',
+                    'en': 'User decline!',
+                    'kz': 'Абонент кайтарып жиберди!',
+                },
             },
         },
         'catalogue-of': {
-            'notLoad': {
-                'ru': 'Данные не были загружены!',
-                'en': 'Can not load data!',
-                'kz': 'Деректер жуктелмеди!',
+            'datas': {
+                'ru': 'данные',
+                'en': 'data',
+                'kz': 'Деректер',
             }
         },
         'clips': {
@@ -122,6 +142,11 @@ export const Library = {
                     'en': 'You are recording!',
                     'kz': 'Тусирип жатырсыз!',
                 },
+                'notGrantedPermissions': {
+                    'ru': 'Нет предоставлены разрешения. Смените их в "Настройки -> Настройки сайтов -> `WNET` -> Очистить разрешения"',
+                    'en': 'Not granted permissions. Change it on "Settings -> Site settings -> `WNET` -> Reset permissions"',
+                    'kz': 'Руксат берилмеген. "Настройкилер -> Сайттардын настройкилери -> `WNET` -> Руксаттарды жанарту"',
+                },
                 'save': {
                     'ru': 'Сохранить',
                     'en': 'Save',
@@ -132,19 +157,7 @@ export const Library = {
                     'en': 'Remove',
                     'kz': 'Жою',
                 },
-                'notGrantedPermissions': {
-                    'ru': 'Нет предоставлены разрешения. Смените их в "Настройки -> Настройки сайтов -> `WNET` -> Очистить разрешения"',
-                    'en': 'Not granted permissions. Change it on "Settings -> Site settings -> `WNET` -> Reset permissions"',
-                    'kz': 'Руксат берилмеген. "Настройкилер -> Сайттардын настройкилери -> `WNET` -> Руксаттарды жанарту"',
-                },
             },
-            'clips': {
-                'notSaveFile': {
-                    'ru': 'не сохранено',
-                    'en': 'not saved',
-                    'kz': 'сакталмады',
-                }
-            }
         },
         'comments': {
             'notLoadClippedFiles': {

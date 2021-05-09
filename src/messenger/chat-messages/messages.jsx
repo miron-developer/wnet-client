@@ -117,7 +117,7 @@ const OneMessage = ({body, datetime, messageType, src, avatar, senderUserID}) =>
     const time = IsTwoDigit(date.getHours()) + ":" + IsTwoDigit(date.getMinutes());
     return (
         <SOneMessage className="message" isMy={isMy}>
-            <Avatar avatar={avatar} size="" isNeedBorder={false} />
+            <Avatar avatar={avatar} size="" />
 
             <SMsgBodyWrapper>
                 <SMsgBody>

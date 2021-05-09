@@ -15,15 +15,15 @@ const SCalls = styled.div`
     position: ${props => props.isOpened ? 'fixed' : 'unset'};
     left: 0;
     top: 0;
-    z-index: ${props => props.isOpened ? '10' : '-10'};
-    display: flex;
-    flex-direction: column;
     width: ${props => props.isOpened ? '100%' : '0'};
     height: ${props => {
         if (props.isFullSize) return '100%';
         return 'max-content';
     }};
+    display: flex;
+    flex-direction: column;
     background: #0404045e;
+    z-index: ${props => props.isOpened ? '10' : '-10'};
 `;
 
 const SVideos = styled.div`
@@ -36,6 +36,15 @@ const SVideos = styled.div`
     grid-gap: 2rem;
     padding: 1rem;
 `;
+
+let setState;
+
+let addVideo;
+let removeVideo;
+let changeVideoPlace;
+
+
+const peers = {};
 
 /* global Peer */
 const MyPeer = {
@@ -59,14 +68,6 @@ const ZeroMyPeer = () => {
     MyPeer.shareStream = undefined;
     Object.values(peers).forEach(call => call.close());
 }
-
-const peers = {};
-
-let setState;
-
-let addVideo;
-let removeVideo;
-let changeVideoPlace;
 
 const AudioVideoOnOff = (type, stream) => {
     if (!stream || !type) return Notify('fail', Library.getText('common.calls.calls.audioVideoOnOffFail'))
@@ -127,7 +128,7 @@ const preCallPreparing = async(type, userID, notificationState, isMeCalling = fa
     const stream = await getUserMediaStream(type);
     
     if (!stream) {
-        if (isMeCalling) return Notify('fail', 'You can not call, bcs you do not give access to camera and micro to WNET!');
+        if (isMeCalling) return Notify('fail', Library.getText('common.calls.calls.notPermission'));
         return SendWSMessage(22, userID);
     }
 
@@ -167,13 +168,13 @@ const Decline = (isMeDecline = true) => {
     setState('stream', undefined);
     setState('onShare', false);
     
-    if (MyPeer.userID && isMeDecline) SendWSMessage(22, MyPeer.userID, 'user disconnected');
+    if (MyPeer.userID && isMeDecline) SendWSMessage(22, MyPeer.userID);
     ZeroMyPeer();
 }
 
 const ShareScreen = async() => {
     if (!MyPeer.conn || !MyPeer.opponentPeerID) return Notify('fail', Library.getText('common.calls.calls.shareFail'));
-    if (MyPeer.shareStream) return Notify('fail', 'you are already share');
+    if (MyPeer.shareStream) return Notify('fail', Library.getText('common.calls.calls.youAlreadyShare'));
     const stream = await getScreenShareStream();
     const call = MyPeer.conn.call(MyPeer.opponentPeerID, stream, { metadata: {'peerID': MyPeer.myPeerID, 'type': 'share'} });
     return HandleShareCall('my', call, stream);
@@ -190,17 +191,17 @@ export const StopShare = async() => {
 }
 
 export const UserNotFree = () => {
-    Notify('info', 'User not free');
+    Notify('info', Library.getText('common.calls.calls.userNotFree'));
     Decline(false);
 }
 
 export const CloseCalls = () => {
-    Notify('info', 'User decline');
+    Notify('info', Library.getText('common.calls.calls.userDecline'));
     Decline(false);
 }
 
 export const GetCalled = async(type, userID, userPeerID, notificationState = {}) => {
-    if (MyPeer.conn) return SendWSMessage(21, userID, 'user not free now');
+    if (MyPeer.conn) return SendWSMessage(21, userID);
 
     MyPeer.opponentPeerID = userPeerID;
     await preCallPreparing(notificationState.type, userID, notificationState, false);

@@ -92,7 +92,7 @@ export default function UserGroupProfile({match}) {
         <SProfile>
             <SProfileData>
                 <SAvatarWrapper>
-                    <Avatar isUser={isUser} avatar={profile.avatar} status={profile.status} isNeedBorder={false} isNeedText={true} size="big" />
+                    <Avatar isUser={isUser} avatar={profile.avatar} status={profile.status} isNeedText={true} size="big" />
                 </SAvatarWrapper>
                 <GProfileData isHaveAccess={isHaveAccess} isUser={isUser} profile={profile} />
             </SProfileData>

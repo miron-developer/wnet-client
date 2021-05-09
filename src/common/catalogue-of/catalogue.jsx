@@ -12,7 +12,7 @@ import styled from 'styled-components';
 const SCatalogueH2 = styled.h2`
     width: 100%;
     text-align: center;
-    text-transform: capitalize;
+    text-transform: uppercase;
 `;
 
 const SCatalogueWrapper = styled.div`
@@ -24,6 +24,7 @@ const SCatalogueWrapper = styled.div`
 `;
 
 const removeFromCatalogue = (id, datalist = [], setDatalist) => setDatalist(datalist.filter(data => data.id !== id));
+const NotLoadText = Library.getText('general.notLoad').replace('SOMETHING', Library.getText('common.catalogue-of.datas'))
 
 export default function Catalogue({ type, get, userID, title, params }) {
     const {datalist, isStopLoad, setDataList, getPart} = useFromTo([], 20);
@@ -32,11 +33,11 @@ export default function Catalogue({ type, get, userID, title, params }) {
     useEffect(
         () => {
             if (!isLoaded) {
-                getPart(get, {...params, 'id' : userID}, Library.getText('common.catalogue-of.notLoad'), true);
+                getPart(get, {...params, 'id' : userID}, NotLoadText, true);
                 setLoaded(true);
             }
         },
-        [isLoaded, params, get, userID, setLoaded, getPart]
+        [isLoaded, params, get, userID, getPart]
     );
 
     return (
@@ -47,7 +48,7 @@ export default function Catalogue({ type, get, userID, title, params }) {
                     e, 
                     isStopLoad, 
                     false, 
-                    () => getPart(get, {...params, 'userID' : userID}, Library.getText('common.catalogue-of.notLoad'), true)
+                    () => getPart(get, {...params, 'userID' : userID}, NotLoadText, true)
                 )
             }>
                 {
