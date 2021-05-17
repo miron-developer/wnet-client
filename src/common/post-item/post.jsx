@@ -79,7 +79,7 @@ export default function PostsItem({id, setHaveAccess = ()=>{}}) {
     const [post, setPost] = useState({});
 
     useEffect(() => {
-        if (post && Object.values(post).length === 0) {
+        if (Object.values(post).length === 0) {
             GetOne({'id': id}, "post", Library.getText('post.notLoadPost'), setPost)
                 .then(done => done === true ? setHaveAccess(true) : setHaveAccess(false))
         }
@@ -88,7 +88,7 @@ export default function PostsItem({id, setHaveAccess = ()=>{}}) {
     const ava = post.userID ? post.userAvatar : post.groupAvatar;
     const name = post.userID ? post.nickname : post.groupTitle;
 
-    return Object.values(post).length === 0 ? <SPost>you dont have access to this post</SPost> : (
+    return Object.values(post).length === 0 ? null : (
         <SPost as={Link} to={`/${Library.getText('common.routes.post')}/${id}`}>
             <SPostUser>
                 <Avatar isUser={true} avatar={ava} status={post.status} />

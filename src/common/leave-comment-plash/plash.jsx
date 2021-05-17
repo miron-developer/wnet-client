@@ -6,6 +6,8 @@ import Clips from 'common/clips/clips';
 import SendText from 'common/send-text/msg';
 
 import styled from "styled-components";
+import { SaveComment } from "functions/api";
+import { USER } from "constants/constants";
 
 const SOneBtn = styled.div`
     width: 3rem;
@@ -52,11 +54,18 @@ const SCommentInputWrapper = styled.div`
     width: 100%;
 `;
 
-const sendTextMsg = async(value = "", preloadedFiles = [], params = {}, updText = ()=>{}, setFiles = ()=>{}, saveComment = async(params = {})=>{}) => {
+const sendTextMsg = async(value = "", preloadedFiles = [], params = {}, updText = ()=>{}, setFiles = ()=>{}, addComments = (...comments)=>{}) => {
     if (value === "") return;
     
     params['body'] = value;
-    const commentID = await saveComment(params);
+    const commentID = await SaveComment(params);
+
+    params.id = commentID;
+    params.datetime = Date.now().toString();
+    params.avatar = USER.avatar;
+    params.nickname = USER.nickname;
+    params.userID = USER.id;
+    addComments(params);
     
     if (preloadedFiles.length > 0) {
         preloadedFiles.forEach(file => UploadFile(file.type, file.file, 'comment', commentID));
@@ -73,12 +82,13 @@ const OneBtn = ({color, alt, srcIcon, onClick}) => {
     )
 }
 
-export default function LeaveCommentPlash({ type, id, saveComment = (params = {})=>{} }) {
+export default function LeaveCommentPlash({ type, id, isAnswer = false, addComments }) {
     const [preloadedFiles, setFiles] = useState([]);
     const params = {
         'type': 'comment',
         'commentType': type,
         'id': id,
+        'isAnswer': isAnswer ? 1 : 0,
     }
 
     return (
@@ -88,7 +98,7 @@ export default function LeaveCommentPlash({ type, id, saveComment = (params = {}
             <SCommentInputWrapper>
                 <Clips Wrapper={OneBtn} preloadedFiles={preloadedFiles} setFiles={setFiles} />
             
-                <SendText Wrapper={OneBtn} send={(value, updText) => sendTextMsg(value, preloadedFiles, params, updText, setFiles, saveComment)} />
+                <SendText Wrapper={OneBtn} send={(value, updText) => sendTextMsg(value, preloadedFiles, params, updText, setFiles, addComments)} />
             </SCommentInputWrapper>
         </SCommentWrapper>
     )

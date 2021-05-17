@@ -1,5 +1,5 @@
-import { PopupOpen } from "common/popup/popup";
 import { DefineType, PreloadFile } from "functions/file";
+import { PopupOpen } from "common/popup/popup";
 import PreloadedFilesPlash from 'common/preloaded-files-plash/plash';
 
 import GetPhotoAndVideoUser from 'common/clips/get-gallery/gallery';
@@ -26,12 +26,13 @@ const SClipPlshWrapper = styled.div`
     }
 `;
 
+const closeCB = () => {
+    if (window.stream) window.stream.getTracks().forEach(t => t.stop());
+}
+
 export default function ClipPlash({Wrapper, preloadedFiles = [], setFiles = ()=>{}}) {
     const addToPlash = (...files) => setFiles([...preloadedFiles, ...files]);
     const removeFile = filename => setFiles(preloadedFiles.filter(file => file.filename !== filename))
-    const closeCB = () => {
-        if (window.stream) window.stream.getTracks().forEach(t => t.stop());
-    }
 
     const preloadedCB = (file, src, type) => {
         addToPlash({

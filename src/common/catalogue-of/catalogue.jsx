@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Library } from 'constants/language';
 import { useFromTo } from 'functions/hooks';
 import { ScrollHandler } from 'functions/effects';
+import { RandomKey } from 'functions/content';
 import EventItem from 'common/event-item/event';
 import ProfileItem from 'common/profile-item/profile';
 import GalleryItem from 'common/gallery-item/gallery';
@@ -23,8 +24,12 @@ const SCatalogueWrapper = styled.div`
     overflow: auto;
 `;
 
+const localLib = {
+    'notLoadDatas': Library.getText('common.catalogue-of.notLoadDatas'),
+    'title': title => Library.getText('profile.actions-btns.btns.'+title),
+}
+
 const removeFromCatalogue = (id, datalist = [], setDatalist) => setDatalist(datalist.filter(data => data.id !== id));
-const NotLoadText = Library.getText('general.notLoad').replace('SOMETHING', Library.getText('common.catalogue-of.datas'))
 
 export default function Catalogue({ type, get, userID, title, params }) {
     const {datalist, isStopLoad, setDataList, getPart} = useFromTo([], 20);
@@ -33,7 +38,7 @@ export default function Catalogue({ type, get, userID, title, params }) {
     useEffect(
         () => {
             if (!isLoaded) {
-                getPart(get, {...params, 'id' : userID}, NotLoadText, true);
+                getPart(get, {...params, 'id' : userID}, localLib.notLoadDatas, true);
                 setLoaded(true);
             }
         },
@@ -42,20 +47,21 @@ export default function Catalogue({ type, get, userID, title, params }) {
 
     return (
         <>
-            <SCatalogueH2>{Library.getText('profile.actions-btns.btns.'+title)}</SCatalogueH2>
+            <SCatalogueH2>{localLib.title(title)}</SCatalogueH2>
             <SCatalogueWrapper onScroll={
                 e => ScrollHandler(
                     e, 
                     isStopLoad, 
                     false, 
-                    () => getPart(get, {...params, 'userID' : userID}, NotLoadText, true)
+                    () => getPart(get, {...params, 'userID' : userID}, localLib.notLoadDatas, true)
                 )
             }>
                 {
-                    datalist.map((data, index) => {
-                        if (type === 'user' || type === 'group') return <ProfileItem key={index} type={type} {...data} />;
-                        if (type === 'event') return <EventItem key={index} {...data} />;
-                        return <GalleryItem key={index} removeFromCatalogue={()=>removeFromCatalogue(data.id, datalist, setDataList)} {...data} />;
+                    datalist.map(data => {
+                        const key = RandomKey();
+                        if (type === 'user' || type === 'group') return <ProfileItem key={key} type={type} {...data} />;
+                        if (type === 'event') return <EventItem key={key} {...data} />;
+                        return <GalleryItem key={key} removeFromCatalogue={()=>removeFromCatalogue(data.id, datalist, setDataList)} {...data} />;
                     })
                 }
             </SCatalogueWrapper>

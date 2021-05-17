@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { COMMENT_PHOTO, PHOTO } from "constants/mocks";
 import { Library } from "constants/language";
-import { GetOne, SaveComment } from "functions/api";
+import { GetOne } from "functions/api";
 import { ScrollHandler } from "functions/effects";
 import { useFromTo } from "functions/hooks";
 import LeaveCommentPlash from 'common/leave-comment-plash/plash';
@@ -44,10 +44,9 @@ export default function PhotoPage({ history }) {
                 <img src={photo.src} alt={photo.title} />
             </SPhoto>
 
-            <LeaveCommentPlash id={ID} type="photo" saveComment={(params = {}) => SaveComment(params, addComments)} />
+            <LeaveCommentPlash id={ID} type="photo" addComments={addComments} />
             
-            <Comments comments={datalist} 
-                saveComment={SaveComment}
+            <Comments comments={datalist}
                 onScroll={
                     e => 
                     ScrollHandler(

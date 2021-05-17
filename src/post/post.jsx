@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 
-import { CLIPPED_FILE_AUDIO, CLIPPED_FILE_IMG, CLIPPED_FILE_VIDEO, CLIPPED_FILE_FILE, COMMENT_POST } from "constants/mocks";
+import { COMMENT_POST } from "constants/mocks";
 import { Library } from "constants/language";
-import { GetAll, SaveComment } from "functions/api";
+import { GetAll } from "functions/api";
 import { ScrollHandler } from "functions/effects";
 import { useFromTo } from "functions/hooks";
 import PostItem from 'common/post-item/post';
@@ -19,19 +19,26 @@ const SClippedFilesWrapper = styled.div`
 export default function PostPage({ history }) {
     const ID = window.location.pathname.split('/')[2];
     const [isHaveAccess, setHaveAccess] = useState();
-    const [clippedFiles, setClippedFiles] = useState([CLIPPED_FILE_IMG, CLIPPED_FILE_AUDIO, CLIPPED_FILE_VIDEO, CLIPPED_FILE_FILE]);
+    const [isLoadedComments, setLoadedComments] = useState(false);
+    const [isLoadedFiles, setLoadedFiles] = useState(false);
+    const [clippedFiles, setClippedFiles] = useState([]);
 
     const [isStopLoad, setStopLoad] = useState(false);
-    const { datalist, setDataList, getPart } = useFromTo([COMMENT_POST, COMMENT_POST, COMMENT_POST, COMMENT_POST, COMMENT_POST, COMMENT_POST, COMMENT_POST])
+    const { datalist, setDataList, getPart } = useFromTo();
     
     const addComments = (...newComments) => setDataList([...datalist, ...newComments]);
 
     useEffect(() => {
-        if (isHaveAccess) {
-            GetAll('files', { 'type': 'post', 'postID': ID }, Library.getText('post.notLoadClippedFiles'), setClippedFiles)
-            getPart('comments', { 'type': 'post', 'postID': ID }, Library.getText('post.notLoadComments'), true, setStopLoad);
+        if (!isHaveAccess) return null;
+        if (!isLoadedFiles) {
+            GetAll('files', { 'type': 'post', 'id': ID }, "", setClippedFiles)
+            setLoadedFiles(true);
         }
-    }, [ID, isHaveAccess, getPart, history]);
+        if (!isLoadedComments) {
+            getPart('comments', { 'type': 'post', 'id': ID }, "", true, setStopLoad);
+            setLoadedComments(true);
+        }
+    }, [ID, isLoadedFiles, isLoadedComments, isHaveAccess, history, getPart]);
 
     if (isHaveAccess === false) return history.push("/") || null;
 
@@ -46,20 +53,23 @@ export default function PostPage({ history }) {
                             <ClippedFiles files={clippedFiles} />
                         </SClippedFilesWrapper>
 
-                        <LeaveCommentPlash id={ID} type="post" saveComment={(params = {}) => SaveComment(params, addComments)} />
+                        <LeaveCommentPlash id={ID} type="post" addComments={addComments} />
                         
-                        <Comments comments={datalist}
-                            saveComment={SaveComment}
-                            onScroll={
-                                e => 
-                                ScrollHandler(
-                                    e, 
-                                    isStopLoad, 
-                                    false, 
-                                    ()=>getPart('comments', { 'type': 'post', 'postID': ID }, Library.getText('post.notLoadComments'), true, setStopLoad)
-                                )
-                            } 
-                        />
+                        {
+                            datalist.length === 0
+                            ? null
+                            : <Comments comments={datalist}
+                                onScroll={
+                                    e => 
+                                    ScrollHandler(
+                                        e, 
+                                        isStopLoad, 
+                                        false, 
+                                        ()=>getPart('comments', { 'type': 'post', 'postID': ID }, Library.getText('post.notLoadComments'), true, setStopLoad)
+                                    )
+                                } 
+                            />
+                        }
                     </>
                     : null
             }

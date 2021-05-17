@@ -9,15 +9,22 @@ const get = (src, path) => {
 
 export const Library = {
     'general': {
-        'notLoad': {
-            'ru': 'Не удалось загрузить SOMETHING!',
-            'en': 'Can not load SOMETHING!',
-            'kz': 'SOMETHING жуктелмеди!',
+        'notHaveClippedFiles': {
+            'ru': 'Нет прикрепленных файлов',
+            'en': 'Not have clipped files',
+            'kz': 'Бекитилген файлдарды жок',
         },
-        'notSave': {
-            'ru': 'Не удалось сохранить SOMETHING!',
-            'en': 'Can not save SOMETHING!',
-            'kz': 'SOMETHING сакталмады!',
+        'notLoadComments': {
+            'ru': 'Не удалось загрузить коментарии!',
+            'en': 'Can not loaded comments!',
+            'kz': 'Коментарийлерди жуктей алмадык!',
+        },
+    },
+    'comment': {
+        'notLoadComment': {
+            'ru': 'Не удалось загрузить комментарий!',
+            'en': 'Can not comment!',
+            'kz': 'Комментарий жуктей алмадык!',
         }
     },
     'common': {
@@ -96,10 +103,10 @@ export const Library = {
                     'en': 'Can not share! Share to nobody?',
                     'kz': 'Экранмен болису болмады. Ешкиммен болисесин ба?',
                 },
-                'youAlreadyShare': {
-                    'ru': 'Не удалось поделиться экраном. Вы уже делитесь',
-                    'en': 'Can not share! You already share',
-                    'kz': 'Экранмен болису болмады. Сиз болисип жатырсыз',
+                'alreadyShared': {
+                    'ru': 'Не удалось поделиться экраном. Идет деление экрана',
+                    'en': 'Can not share! Share is going',
+                    'kz': 'Экранмен болису болмады. Экран болисип жатыр',
                 },
                 'toCallFail': {
                     'ru': 'Ты не сможешь поделиться на 2!',
@@ -119,10 +126,22 @@ export const Library = {
             },
         },
         'catalogue-of': {
-            'datas': {
-                'ru': 'данные',
-                'en': 'data',
-                'kz': 'Деректер',
+            'notLoadDatas': {
+                'ru': 'Не удалось загрузить данные!',
+                'en': 'Can not loaded datas!',
+                'kz': 'Деректерди жуктей алмадык!',
+            }
+        },
+        'choose-list': {
+            'noList': {
+                'ru': 'Никого/ничего',
+                'en': 'No one',
+                'kz': 'Ешким/ештене',
+            },
+            'notLoadList': {
+                'ru': 'Не удалось загрузить список!',
+                'en': 'Can not load list!',
+                'kz': 'Тизимди жуктей алмадык!',
             }
         },
         'clips': {
@@ -160,16 +179,6 @@ export const Library = {
             },
         },
         'comments': {
-            'notLoadClippedFiles': {
-                'ru': 'Не удалось загрузить прикрепленные файлы!',
-                'en': 'Can not loaded clipped files!',
-                'kz': 'Бекитилген файлдарды жуктей алмадык!',
-            },
-            'notLoadComments': {
-                'ru': 'Не удалось загрузить коментарии!',
-                'en': 'Can not loaded comments!',
-                'kz': 'Коментарийлерди жуктей алмадык!',
-            },
             'answer': {
                 'ru': 'Ответить',
                 'en': 'Answer',
@@ -181,7 +190,7 @@ export const Library = {
                 'kz': 'Жауаптарды корсету',
             },
             'answers': {
-                'ru': 'Ответиты',
+                'ru': 'Ответы',
                 'en': 'Answers',
                 'kz': 'Жауаптар',
             },
@@ -335,18 +344,6 @@ export const Library = {
                         'en': 'Clip file',
                         'kz': 'Файл кыстыру',
                     },
-                    'getList': {
-                        'noList': {
-                            'ru': 'Никого/ничего',
-                            'en': 'No one',
-                            'kz': 'Ешким/ештене',
-                        },
-                        'notLoadList': {
-                            'ru': 'Не удалось загрузить список!',
-                            'en': 'Can not load list!',
-                            'kz': 'Тизимди жуктей алмадык!',
-                        }
-                    }
                 },
                 'group': {
                     'publicHint': {
@@ -890,16 +887,6 @@ export const Library = {
             'ru': 'Не удалось загрузить пост!',
             'en': 'Can not load post!',
             'kz': 'Пост жуктелмеди!',
-        },
-        'notLoadClippedFiles': {
-            'ru': 'Не удалось загрузить прикрепленные файлы!',
-            'en': 'Can not load clipped files!',
-            'kz': 'Бекитилген файлдар жуктелмеди!',
-        },
-        'notLoadComments': {
-            'ru': 'Не удалось загрузить комментарий!',
-            'en': 'Can not load comments!',
-            'kz': 'Комментарийлер жуктелмеди!',
         },
         'notSaveComment': {
             'ru': 'Не удалось сохранить комментарий!',

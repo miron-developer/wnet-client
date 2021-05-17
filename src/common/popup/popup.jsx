@@ -50,8 +50,10 @@ const SPopupClose = styled.div`
 `;
 
 const SContentWrapper = styled.div`
-    height: 90vh;
-    width: 80vw;
+    max-height: 90vh;
+    max-width: 80vw;
+    height: max-content;
+    width: max-content;
     ${SDisplayFlexCenter};
     flex-direction: column;
     border-radius: 10px;

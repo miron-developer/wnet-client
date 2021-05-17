@@ -11,7 +11,8 @@ const SFilesPlash = styled.div`
 `;
 
 const SClippedFileWrapper = styled.div`
-    width:  ${props => props.size ? props.size : '15rem'};
+    max-width:  ${props => props.size ? props.size : '15rem'};
+    width: max-content;
     max-height: ${props => props.size ? props.size : '15rem'};
     margin: .5rem;
     padding: .5rem;

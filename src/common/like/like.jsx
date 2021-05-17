@@ -26,7 +26,7 @@ const SCarmaCount = styled.div`
 `;
 
 
-const useLikeFunction = (id, type, carma, isLiked) => {
+const useLikeFunction = (id, type, carma = 0, isLiked = 0) => {
     const [isLikedState, setLikedState] = useState(isLiked);
     const [newCarma, setCarma] = useState(carma);
 

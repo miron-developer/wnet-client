@@ -35,6 +35,11 @@ const SChooseListItem = styled.div`
     }
 `;
 
+const localLib = {
+    'notLoadList': Library.getText('common.choose-list.notLoadList'),
+    'noList': Library.getText('common.choose-list.noList'),
+}
+
 const GListItem = ({ isChoosen, nickname, title, avatar, onClick }) => {
     const name = nickname ? nickname : title;
 
@@ -53,7 +58,7 @@ export default function GetList({ title, type = "followers", params = {}, choose
     useEffect(
         () => {
             if (datalist.length === 0 && !isLoaded) {
-                getPart(type, params, Library.getText('common.header.create-a.post.getList.notLoadList'), true);
+                getPart(type, params, localLib.notLoadList, true);
                 setLoaded(true);
             }
         },
@@ -72,13 +77,13 @@ export default function GetList({ title, type = "followers", params = {}, choose
                         e, 
                         isStopLoad, 
                         false, 
-                        () => getPart(type, params, Library.getText('common.header.create-a.post.getList.notLoadList'), true)
+                        () => getPart(type, params, localLib.notLoadList, true)
                     )
                 }
             >
                 {
                     datalist.length === 0 
-                        ? <span>{Library.getText('common.header.create-a.post.getList.noList')}</span>
+                        ? <span>{localLib.noList}</span>
                         : datalist.map(
                             item => 
                             <GListItem key={RandomKey()} {...item} 

@@ -12,6 +12,7 @@ import styled from 'styled-components';
 
 const SChangeProfile = styled.div`
     margin: auto;
+    padding: 2rem;
 
     & h2 {
         text-align: center;

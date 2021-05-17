@@ -56,6 +56,16 @@ const MyPeer = {
     userID: undefined,
 }
 
+const localLib = {
+    'audioVideoOnOffFail': Library.getText('common.calls.calls.audioVideoOnOffFail'),
+    'notPermission': Library.getText('common.calls.calls.notPermission'),
+    'shareFall': Library.getText('common.calls.calls.shareFail'),
+    'alreadyShared': Library.getText('common.calls.calls.alreadyShared'),
+    'userNotFree': Library.getText('common.calls.calls.userNotFree'),
+    'userDecline': Library.getText('common.calls.calls.userDecline'),
+    'toCallFail': Library.getText('common.calls.calls.toCallFail'),
+}
+
 const ZeroMyPeer = () => {
     if (MyPeer.conn) MyPeer.conn.disconnect();
     MyPeer.conn = undefined;
@@ -70,7 +80,7 @@ const ZeroMyPeer = () => {
 }
 
 const AudioVideoOnOff = (type, stream) => {
-    if (!stream || !type) return Notify('fail', Library.getText('common.calls.calls.audioVideoOnOffFail'))
+    if (!stream || !type) return Notify('fail', localLib.audioVideoOnOffFail)
     const track = type === 'audio' ? stream.getAudioTracks()[0] : stream.getVideoTracks()[0];
     track.enabled = !track.enabled;
 }
@@ -101,7 +111,7 @@ const getUserMediaStream = async(type) => {
 }
 
 const HandleShareCall = (type, call, stream = {}) => {
-    const handleStream = (shareStream, isMy = true) => {
+    const handleStream = (shareStream) => {
         MyPeer.shareStream = shareStream;
         peers['share'] = call;
         setState('onShare', true);
@@ -128,7 +138,7 @@ const preCallPreparing = async(type, userID, notificationState, isMeCalling = fa
     const stream = await getUserMediaStream(type);
     
     if (!stream) {
-        if (isMeCalling) return Notify('fail', Library.getText('common.calls.calls.notPermission'));
+        if (isMeCalling) return Notify('fail', localLib.notPermission);
         return SendWSMessage(22, userID);
     }
 
@@ -173,8 +183,8 @@ const Decline = (isMeDecline = true) => {
 }
 
 const ShareScreen = async() => {
-    if (!MyPeer.conn || !MyPeer.opponentPeerID) return Notify('fail', Library.getText('common.calls.calls.shareFail'));
-    if (MyPeer.shareStream) return Notify('fail', Library.getText('common.calls.calls.youAlreadyShare'));
+    if (!MyPeer.conn || !MyPeer.opponentPeerID) return Notify('fail', localLib.shareFall);
+    if (MyPeer.shareStream) return Notify('fail', localLib.alreadyShared);
     const stream = await getScreenShareStream();
     const call = MyPeer.conn.call(MyPeer.opponentPeerID, stream, { metadata: {'peerID': MyPeer.myPeerID, 'type': 'share'} });
     return HandleShareCall('my', call, stream);
@@ -191,12 +201,12 @@ export const StopShare = async() => {
 }
 
 export const UserNotFree = () => {
-    Notify('info', Library.getText('common.calls.calls.userNotFree'));
+    Notify('info', localLib.userNotFree);
     Decline(false);
 }
 
 export const CloseCalls = () => {
-    Notify('info', Library.getText('common.calls.calls.userDecline'));
+    Notify('info', localLib.userDecline);
     Decline(false);
 }
 
@@ -216,7 +226,7 @@ export const GetCalled = async(type, userID, userPeerID, notificationState = {})
 }
 
 export const ToCall = async(type, userID) => {
-    if (MyPeer.conn) return Notify('fail', Library.getText('common.calls.calls.toCallFail'));
+    if (MyPeer.conn) return Notify('fail', localLib.toCallFail);
 
     await preCallPreparing(type, userID, {type: type, whomCalling: 'me'}, true);
   

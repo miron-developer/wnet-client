@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 import { COMMENT_VIDEO, VIDEO } from "constants/mocks";
 import { Library } from "constants/language";
-import { GetOne, SaveComment } from "functions/api";
+import { GetOne } from "functions/api";
 import { ScrollHandler } from "functions/effects";
 import { useFromTo } from "functions/hooks";
 import LeaveCommentPlash from 'common/leave-comment-plash/plash';
@@ -45,10 +45,9 @@ export default function VideoPage({ history }) {
                 <video src={video.src} controls />
             </SVideo>
 
-            <LeaveCommentPlash id={ID} type="video" saveComment={(params = {}) => SaveComment(params, addComments)} />
+            <LeaveCommentPlash id={ID} type="video" addComments={addComments} />
 
-            <Comments comments={datalist} 
-                saveComment={SaveComment}
+            <Comments comments={datalist}
                 onScroll={
                     e => 
                     ScrollHandler(

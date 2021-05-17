@@ -73,9 +73,8 @@ export const GetAll = async(whatGet = "", params, failText = "", set = () => {})
 }
 
 // save one comment & render it
-export const SaveComment = async(params = {}, addComment = () => {}) => {
-    const res = await POSTRequestWithParams('/save', params);
+export const SaveComment = async(params = {}) => {
+    const res = await POSTRequestWithParams('/s/comment', params);
     if (res.err !== 'ok') return Notify('fail', Library.getText('functions.effects.notSaveComment'));
-    addComment([res.data]);
     return res.data.id;
 }
