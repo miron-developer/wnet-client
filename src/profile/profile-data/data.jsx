@@ -25,6 +25,18 @@ const SProfileDataData = styled.span`
     color: var(--onHoverColor);
 `;
 
+const localLib = {
+    'nick': Library.getText('profile.data.nick'),
+    'lName': Library.getText('profile.data.lName'),
+    'fName': Library.getText('profile.data.fName'),
+    'gender': Library.getText('profile.data.gender'),
+    'dob': Library.getText('profile.data.dob'),
+    'cdate': Library.getText('profile.data.cdate'),
+    'title': Library.getText('profile.data.title'),
+    'aboutMe': Library.getText('profile.data.aboutMe'),
+    'description': Library.getText('profile.data.description'),
+}
+
 const GProfileDataField = ({which, data}) => {
     return (
         <div>
@@ -39,33 +51,33 @@ export default function GProfileData({isUser, isHaveAccess, profile}) {
     if (isUser)
         return (
             <SProfileDataGeneral>
-                <GProfileDataField which={Library.getText('profile.data.nick')} data={profile.nickname} />
+                <GProfileDataField which={localLib.nick} data={profile.nickname} />
 
                 {
                     !isHaveAccess
                         ? null
                         : <>
-                            <GProfileDataField which={Library.getText('profile.data.lName')}  data={profile.lName} />
-                            <GProfileDataField which={Library.getText('profile.data.fName')}  data={profile.fName} />
-                            <GProfileDataField which={Library.getText('profile.data.gender')} data={profile.gender} />
-                            <GProfileDataField which={Library.getText('profile.data.dob')}    data={profile.dob} />
+                            <GProfileDataField which={localLib.lName}  data={profile.lName} />
+                            <GProfileDataField which={localLib.fName}  data={profile.fName} />
+                            <GProfileDataField which={localLib.gender} data={profile.gender} />
+                            <GProfileDataField which={localLib.dob}    data={profile.dob} />
                         </>
                 }
 
-                <GProfileDataField which={Library.getText('profile.data.aboutMe')} data={profile.aboutMe} />
+                <GProfileDataField which={localLib.aboutMe} data={profile.aboutMe} />
             </SProfileDataGeneral>
         );
     return (
         <SProfileDataGeneral>
-            <GProfileDataField which={Library.getText('profile.data.title')} data={profile.title} />
+            <GProfileDataField which={localLib.title} data={profile.title} />
 
             {
                 !isHaveAccess 
                     ? null 
-                    : <GProfileDataField which={Library.getText('profile.data.cdate')} data={profile.cdate} />
+                    : <GProfileDataField which={localLib.cdate} data={profile.cdate} />
             }
 
-            <GProfileDataField which={Library.getText('profile.data.description')} data={profile.description} />
+            <GProfileDataField which={localLib.description} data={profile.description} />
         </SProfileDataGeneral>
     );
 }

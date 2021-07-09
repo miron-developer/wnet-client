@@ -14,7 +14,7 @@ const SAppNotifications = styled.div`
     z-index: 20;
 `
 
-const SAppNotificationWrapper = styled.div`
+const SAppNotification = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -23,7 +23,7 @@ const SAppNotificationWrapper = styled.div`
     margin: .5rem;
     padding: 1rem;
     border-radius: 5px;
-    background: ${props => `var(${props.color})`};
+    background: ${props => props.isFail ? 'var(--failBG)' : '#ffffffed'};
 `;
 
 const SCloseNotification = styled.div`
@@ -54,12 +54,6 @@ export const Notify = (type, content, isAutoClose) => {
     }, 0);
 }
 
-const colors = {
-    'success': '--successBG',
-    'fail': '--failBG',
-    'info': '--infoBG',
-}
-
 const Notification = ({ id = 0, type = "fail", content, isAutoClose = true }) => {
     if (!content) return null;
     if (isAutoClose) setTimeout(() => removeNotification(id), 5000);
@@ -68,12 +62,12 @@ const Notification = ({ id = 0, type = "fail", content, isAutoClose = true }) =>
     if (content instanceof Function) noteContent = content(); 
 
     return (
-        <SAppNotificationWrapper color={colors[type]}>
+        <SAppNotification isFail={type==="fail"}>
             <div className="notification-content">{noteContent}</div>
             <SCloseNotification onClick={()=>removeNotification(id)}>
                 <i className="fa fa-times" aria-hidden="true"></i>
             </SCloseNotification>
-        </SAppNotificationWrapper>
+        </SAppNotification>
     )
 }
 

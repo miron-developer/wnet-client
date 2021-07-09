@@ -6,11 +6,13 @@
 [figma here](https://www.figma.com/file/ZF3iHH7HcIYk5juqYioTwj/wnet?node-id=1%3A2)
 
 ### WNET site
-[site here](https://wnet.herokuapp.com/)
+[site here](https://wnet-sn.herokuapp.com/)
 
 ### Basic
 [RU]WNET - это сайт для общения, звонков друзьям, публикации сообщений, сбора друзей в группы и приглашения на мероприятие.
-[EN]WNET is the site for conversation, calling to friends, making post, gather friends to group and invite to a event
+
+[EN]WNET is the site for conversation, calling to friends, making post, gather friends to group and invite to a event.
+
 [KZ]WNET - сұхбаттасуға, достарына қоңырау шалуға, хабарламалар жіберуге, достарды топтарға жинауға және іс-шараға шақыруға арналған сайт.
 
 ### Functionality

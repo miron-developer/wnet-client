@@ -8,6 +8,119 @@ const get = (src, path) => {
 }
 
 export const Library = {
+    'account': {
+        'groups': {
+            'notLoad': {
+                'ru': 'Не удалось загрузить группы!',
+                'en': 'Can not load groups!',
+                'kz': 'Топтарды жуктей алмадык!',
+            },
+        },
+        'friends': {
+            'notLoad': {
+                'ru': 'Не удалось загрузить друзей!',
+                'en': 'Can not load friends!',
+                'kz': 'Достарды жуктей алмадык!',
+            },
+        },
+        'gallery': {
+            'notLoad': {
+                'ru': 'Не удалось загрузить галлерею!',
+                'en': 'Can not load gallery!',
+                'kz': 'Галлереяны жуктей алмадык!',
+            },
+            'upload': {
+                'upload': {
+                    'ru': 'загрузить',
+                    'en': 'upload',
+                    'kz': 'жуктеу',
+                },
+                'titleRequired': {
+                    'ru': 'Название обязательно!',
+                    'en': 'Title required!',
+                    'kz': 'Аты керек!',
+                },
+                'canNotUpload': {
+                    'ru': 'Не удалось отправить!',
+                    'en': 'Can not upload!',
+                    'kz': 'Жиберилмеди!',
+                },
+                'clickToChange': {
+                    'ru': 'нажмите здесь чтобы изменить',
+                    'en': 'click here to change',
+                    'kz': 'озгерту ушин мынаны басыныз',
+                },
+                'poster': {
+                    'ru': 'постер',
+                    'en': 'poster',
+                    'kz': 'постер',
+                }
+            }
+        },
+        'settings': {
+            'settings': {
+                'nothingToChange': {
+                    'ru': 'Ничего не меняется!',
+                    'en': 'Nothing to change!',
+                    'kz': 'Ештене озгермейди!',
+                },
+                'notSaveSettings': {
+                    'ru': 'Не удалось сохранить настройки!',
+                    'en': 'Can not save settings!',
+                    'kz': 'Настройкилер озгермеди!',
+                },
+                'changeWhatYouWant': {
+                    'ru': 'Измените то, что хотели бы изменить',
+                    'en': 'Change what you want to change',
+                    'kz': 'Калаганын озгертиниз',
+                }
+            },
+            'account': {
+                'avatar': {
+                    'ru': 'Аватар',
+                    'en': 'Avatar',
+                    'kz': 'Аватар',
+                },
+                'canNotUploadAvatar': {
+                    'ru': 'Не удалось отправить аватар!',
+                    'en': 'Can not upload avatar!',
+                    'kz': 'Аватар жиберилмеди!',
+                },
+                'private': {
+                    'ru': 'Приватный',
+                    'en': 'Private',
+                    'kz': 'Жеке',
+                },
+                'public': {
+                    'ru': 'Публичный',
+                    'en': 'Public',
+                    'kz': 'Публикалык',
+                },
+                'privateHint': {
+                    'ru': 'Приватный аккаунт: Ваши посты, некоторые данные будут не видны для сторонних. Также чтобы следовать за Вами другие пользователи сначала будут отправлять запрос.',
+                    'en': 'Private account: your posts, some datas will be hidden. You will be get requests before people follow you.',
+                    'kz': 'Жеке аккаунт: Сиздин посттарыныз, кейбир декертер коринбейды баскаларга. Жане Сиздин изиннен еру ушин баска колданушылар алдымен руксат сурайды.',
+                },
+                'publicHint': {
+                    'ru': 'Публичный аккаунт: Ваши данные будут видны всем пользователям. Также пользователи могут следовать за вами без Вашего запроса.',
+                    'en': 'Public account: your datas will be visible for all people. People will follow without requests.',
+                    'kz': 'Публикалык аккаунт: Сиздин деректериниз баршага коринеды. Сонымен катар баска колданушылар руксатсыз изинизден ере алады.',
+                },
+                'change': {
+                    'ru': 'Изменить!',
+                    'en': 'Change!',
+                    'kz': 'Озгерту!',
+                }
+            },
+            'confirm': {
+                'confirmChange': {
+                    'ru': 'Подтверждение изменения',
+                    'en': 'Confirm change',
+                    'kz': 'Озгеристи расстау',
+                },
+            }
+        }
+    },
     'general': {
         'notHaveClippedFiles': {
             'ru': 'Нет прикрепленных файлов',
@@ -145,6 +258,13 @@ export const Library = {
             }
         },
         'clips': {
+            'clips': {
+                'notSaveFile': {
+                    'ru': 'Не сохранилось!',
+                    'en': 'File not saved!',
+                    'kz': 'Файл сакталган жок!',
+                },
+            },
             'gallery': {
                 'notHaveRecordedData': {
                     'ru': 'Нет записанных данных для сохранения!',
@@ -198,7 +318,12 @@ export const Library = {
                 'ru': 'Комментарии',
                 'en': 'Comments',
                 'kz': 'Комментарийлер',
-            }
+            },
+            'writeFirstComment': {
+                'ru': 'Напишите комментарий первым',
+                'en': 'Write first comment',
+                'kz': 'Биринши комментарийди жазыныз',
+            },
         },
         'event-item': {
             'event': {
@@ -237,6 +362,11 @@ export const Library = {
                     'en': 'Description',
                     'kz': 'Сипаттама',
                 },
+                'notLoadEvent': {
+                    'ru': 'Не удалось загрузить событие!',
+                    'en': 'Can not load event!',
+                    'kz': 'Окига жуктелмеди!',
+                }
             }
         },
         'footer': {
@@ -301,6 +431,36 @@ export const Library = {
                     'en': 'Create',
                     'kz': 'Куру',
                 },
+                'created': {
+                    'ru': 'Создано!',
+                    'en': 'Created!',
+                    'kz': 'Курылды!',
+                },
+                'chooseGroup': {
+                    'ru': 'Выберите группу, где хотите опубликовать:',
+                    'en': 'Choose groups where you publish:',
+                    'kz': 'Жариялайтын топты танданыз:',
+                },
+                'chooseFollowers': {
+                    'ru': 'Выберите подписчиков, которым хотите дать доступ к посту:',
+                    'en': 'Choose followers, that you want to grant access:',
+                    'kz': 'Ерушилерден постка руксат бергиниз келгенди танданыз:',
+                },
+                'notChoosenGroup': {
+                    'ru': 'выберите как минимум одну группу',
+                    'en': 'choose atleast 1 group:',
+                    'kz': 'кем дегенде бир топ танданыз',
+                },
+                'forMe': {
+                    'ru': 'меня',
+                    'en': 'me',
+                    'kz': 'мен ушин',
+                },
+                'forGroup': {
+                    'ru': 'группы',
+                    'en': 'group',
+                    'kz': 'группа ушин',
+                },
                 'createItems': {
                     'post': {
                         'ru': 'пост',
@@ -316,7 +476,27 @@ export const Library = {
                         'ru': 'событие',
                         'en': 'event',
                         'kz': 'окига',
+                    },
+                    'photo': {
+                        'ru': 'фото',
+                        'en': 'photo',
+                        'kz': 'фото',
+                    },
+                    'video': {
+                        'ru': 'видео',
+                        'en': 'video',
+                        'kz': 'видео',
                     }
+                },
+                'fillTitle': {
+                    'ru': 'Заполните название!',
+                    'en': 'Fill title!',
+                    'kz': 'Атын толтырыныз!',
+                },
+                'fillDescription': {
+                    'ru': 'Заполните описание!',
+                    'en': 'Fill description!',
+                    'kz': 'Аныктамасын толтырыныз!',
                 },
                 'post': {
                     'almostPrivate': {
@@ -344,6 +524,11 @@ export const Library = {
                         'en': 'Clip file',
                         'kz': 'Файл кыстыру',
                     },
+                    'postFor': {
+                        'ru': 'пост для',
+                        'en': 'post for',
+                        'kz': 'не ушин пост',
+                    },
                 },
                 'group': {
                     'publicHint': {
@@ -357,17 +542,34 @@ export const Library = {
                         'kz': 'Жеке топ: тек Сиздин изинизден ергендерге коринеди.',
                     },
                 },
-                'event': {
-                    'fillTitle': {
-                        'ru': 'Заполните название!',
-                        'en': 'Fill title!',
-                        'kz': 'Атын толтырыныз!',
+                'photo': {
+                    'photoFor': {
+                        'ru': 'фото для',
+                        'en': 'photo for',
+                        'kz': 'не ушин сурет',
                     },
-                    'fillDescription': {
-                        'ru': 'Заполните описание!',
-                        'en': 'Fill description!',
-                        'kz': 'Аныктамасын толтырыныз!',
-                    }
+                    'choosePhoto': {
+                        'ru': 'выберите фото для загрузки',
+                        'en': 'choose photo to upload',
+                        'kz': 'жуктеу ушин сурет танданыз',
+                    },
+                },
+                'video': {
+                    'videoFor': {
+                        'ru': 'видео для',
+                        'en': 'video for',
+                        'kz': 'не ушин видео',
+                    },
+                    'chooseVideo': {
+                        'ru': 'выберите видео для загрузки',
+                        'en': 'choose video to upload',
+                        'kz': 'жуктеу ушин видео танданыз',
+                    },
+                    'choosePoster': {
+                        'ru': 'выберите постер для видео',
+                        'en': 'choose poster for video',
+                        'kz': 'видео ушин постер танданыз',
+                    },
                 }
             },
             'notification': {
@@ -421,25 +623,6 @@ export const Library = {
                     'ru': 'главная',
                     'en': 'home',
                     'kz': 'басты',
-                }
-            },
-            'user-menu': {
-                'userItems': {
-                    'gallery': {
-                        'ru': 'галлерея',
-                        'en': 'gallery',
-                        'kz': 'галлерея',
-                    },
-                    'settings': {
-                        'ru': 'настройки',
-                        'en': 'settings',
-                        'kz': 'настройкилер',
-                    },
-                    'logout': {
-                        'ru': 'выйти',
-                        'en': 'sign out!',
-                        'kz': 'шыгу!',
-                    },
                 }
             },
             'header': {
@@ -538,11 +721,6 @@ export const Library = {
                     'en': 'all',
                     'kz': 'барин',
                 },
-                'user': {
-                    'ru': 'пользователь',
-                    'en': 'user',
-                    'kz': 'пайдаланушы',
-                },
             },
             'post': {
                 'ru': 'пост',
@@ -559,27 +737,22 @@ export const Library = {
                 'en': 'video',
                 'kz': 'бейнежазба',
             },
-            'profile': {
-                'profile': {
-                    'ru': 'профиль',
-                    'en': 'profile',
-                    'kz': 'профиль',
+            'account': {
+                'account': {
+                    'ru': 'аккаунт',
+                    'en': 'account',
+                    'kz': 'аккаунт',
                 },
                 'gallery': {
-                    'ru': 'галлерея',
+                    'ru': 'галерея',
                     'en': 'gallery',
-                    'kz': 'галлерея',
+                    'kz': 'галерея',
                 },
                 'settings': {
                     'settings': {
                         'ru': 'настройки',
                         'en': 'settings',
                         'kz': 'настройкилер',
-                    },
-                    'account': {
-                        'ru': 'аккаунт',
-                        'en': 'account',
-                        'kz': 'аккаунт',
                     },
                     'personal': {
                         'ru': 'личные',
@@ -660,14 +833,14 @@ export const Library = {
             },
         },
     },
-    'event': {
-        'notLoadEvent': {
-            'ru': 'Не удалось загрузить событие!',
-            'en': 'Can not load event!',
-            'kz': 'Окига жуктелмеди!',
-        }
-    },
     'functions': {
+        'api': {
+            '500err': {
+                'ru': '500: сервер не отвечает',
+                'en': '500: server not response',
+                'kz': '500: сервер жауап бермейди',
+            },
+        },
         'content': {
             'notPublications': {
                 'ru': 'Публикации нет',
@@ -766,6 +939,16 @@ export const Library = {
                 'ru': 'Что-то пошло не так... Пожалуйста, обновите страницу',
                 'en': 'Something wrong...Please refresh the page',
                 'kz': 'Бирдене дурыс емес... Отиниш, паракшаны жанартыныз',
+            },
+            'logouting': {
+                'ru': 'Производится выход...',
+                'en': 'Sign out...',
+                'kz': 'Шыгып жатырсыз...',
+            },
+            'logouted': {
+                'ru': 'Вышли!',
+                'en': 'Sign outed!',
+                'kz': 'Шыктыныз!',
             },
             'toFollows': {
                 'rlshipError': {
@@ -901,6 +1084,11 @@ export const Library = {
                 'en': 'Change data',
                 'kz': 'Деректерди озгерту',
             },
+            'change': {
+                'ru': 'Изменить!',
+                'en': 'Change!',
+                'kz': 'Озгерту!',
+            },
             'somethingError': {
                 'ru': 'Что-то пошло не так...',
                 'en': 'Something error...',
@@ -973,6 +1161,21 @@ export const Library = {
                     'ru': 'Сменить данные!',
                     'en': 'Change data!',
                     'kz': 'Деректер озгерту!',
+                },
+                'canNotCreateChat': {
+                    'ru': 'Не удалось создать чат!',
+                    'en': 'Can not create chat!',
+                    'kz': 'Чат кура алмадык!',
+                },
+                'actions': {
+                    'ru': 'Действия',
+                    'en': 'Actions',
+                    'kz': 'Арекеттер',
+                },
+                'writeMessage': {
+                    'ru': 'написать сообщение',
+                    'en': 'write message',
+                    'kz': 'хабарлама жазу',
                 },
             },
             'btns': {
@@ -1110,112 +1313,6 @@ export const Library = {
                 'en': 'events',
                 'kz': 'окигалар',
             },
-        }
-    },
-    'profile-path': {
-        'groups': {
-            'notLoad': {
-                'ru': 'Не удалось загрузить группы!',
-                'en': 'Can not load groups!',
-                'kz': 'Топтарды жуктей алмадык!',
-            },
-        },
-        'friends': {
-            'notLoad': {
-                'ru': 'Не удалось загрузить друзей!',
-                'en': 'Can not load friends!',
-                'kz': 'Достарды жуктей алмадык!',
-            },
-        },
-        'gallery': {
-            'notLoad': {
-                'ru': 'Не удалось загрузить галлерею!',
-                'en': 'Can not load gallery!',
-                'kz': 'Галлереяны жуктей алмадык!',
-            },
-            'upload': {
-                'upload': {
-                    'ru': 'загрузить',
-                    'en': 'upload',
-                    'kz': 'жуктеу',
-                },
-                'titleRequired': {
-                    'ru': 'Название обязательно!',
-                    'en': 'Title required!',
-                    'kz': 'Аты керек!',
-                },
-                'canNotUpload': {
-                    'ru': 'Не удалось отправить!',
-                    'en': 'Can not upload!',
-                    'kz': 'Жиберилмеди!',
-                },
-                'clickToChange': {
-                    'ru': 'нажмите здесь чтобы изменить',
-                    'en': 'click here to change',
-                    'kz': 'озгерту ушин мынаны басыныз',
-                },
-                'poster': {
-                    'ru': 'постер',
-                    'en': 'poster',
-                    'kz': 'постер',
-                }
-            }
-        },
-        'settings': {
-            'settings': {
-                'nothingToChange': {
-                    'ru': 'Ничего не меняется!',
-                    'en': 'Nothing to change!',
-                    'kz': 'Ештене озгермейди!',
-                },
-                'notSaveSettings': {
-                    'ru': 'Не удалось сохранить настройки!',
-                    'en': 'Can not save settings!',
-                    'kz': 'Настройкилер озгермеди!',
-                },
-                'changeWhatYouWant': {
-                    'ru': 'Измените то, что хотели бы изменить',
-                    'en': 'Change what you want to change',
-                    'kz': 'Калаганын озгертиниз',
-                }
-            },
-            'account': {
-                'avatar': {
-                    'ru': 'Аватар',
-                    'en': 'Avatar',
-                    'kz': 'Аватар',
-                },
-                'canNotUploadAvatar': {
-                    'ru': 'Не удалось отправить аватар!',
-                    'en': 'Can not upload avatar!',
-                    'kz': 'Аватар жиберилмеди!',
-                },
-                'private': {
-                    'ru': 'Приватный',
-                    'en': 'Private',
-                    'kz': 'Жеке',
-                },
-                'public': {
-                    'ru': 'Публичный',
-                    'en': 'Public',
-                    'kz': 'Публикалык',
-                },
-                'privateHint': {
-                    'ru': 'Приватный аккаунт: Ваши посты, некоторые данные будут не видны для сторонних. Также чтобы следовать за Вами другие пользователи сначала будут отправлять запрос.',
-                    'en': 'Private account: your posts, some datas will be hidden. You will be get requests before people follow you.',
-                    'kz': 'Жеке аккаунт: Сиздин посттарыныз, кейбир декертер коринбейды баскаларга. Жане Сиздин изиннен еру ушин баска колданушылар алдымен руксат сурайды.',
-                },
-                'publicHint': {
-                    'ru': 'Публичный аккаунт: Ваши данные будут видны всем пользователям. Также пользователи могут следовать за вами без Вашего запроса.',
-                    'en': 'Public account: your datas will be visible for all people. People will follow without requests.',
-                    'kz': 'Публикалык аккаунт: Сиздин деректериниз баршага коринеды. Сонымен катар баска колданушылар руксатсыз изинизден ере алады.',
-                },
-                'change': {
-                    'ru': 'Изменить!',
-                    'en': 'Change!',
-                    'kz': 'Озгерту!',
-                }
-            }
         }
     },
     'search': {
@@ -1372,6 +1469,11 @@ export const Library = {
                 'en': 'Repeat password:',
                 'kz': 'Парольды кайтадан териниз:',
             },
+            'verificationMsg': {
+                'ru': 'Письмо подтвержения отправлено на Вашу почту. Проверьте',
+                'en': 'Verification msg sended to your email. Check it',
+                'kz': 'Расстау хат почтанызга жиберилди. Тексериниз',
+            },
         },
         'sign-in': {
             'sign-in': {
@@ -1463,7 +1565,7 @@ export const Library = {
                 'en': 'Code:',
                 'kz': 'Код:',
             }
-        }
+        },
     },
     'video': {
         'notLoadVideo': {

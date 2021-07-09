@@ -9,24 +9,25 @@ import styled from 'styled-components';
 
 const SHome = styled.div`
     height: 86vh;
+    padding: 2rem;
     overflow: auto;
 `;
 
+const loadNews = (getPart) => getPart('news', {}, Library.getText('home.notLoad'), true);
+
 export default function Home() {
     const [isLoaded, setLoaded] = useState(false)
-    const { datalist, isStopLoad, getPart } = useFromTo([], 20);
+    const { datalist, isStopLoad, getPart } = useFromTo([], 5);
 
     useEffect(()=> {
         if (datalist.length === 0 && !isLoaded) {
-            getPart('news', {}, Library.getText('home.notLoad'), true);
+            loadNews(getPart);
             setLoaded(true);
         }
     }, [datalist, isLoaded, getPart]);
 
     return (
-        <SHome
-            onScroll={e => ScrollHandler(e, isStopLoad, false, () => getPart('news', {}, Library.getText('home.notLoad'), true))}
-        >
+        <SHome onScroll={e => ScrollHandler(e, isStopLoad, false, () => loadNews(getPart))}>
             {GeneratePublications(datalist)}
         </SHome>
     )

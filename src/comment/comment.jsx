@@ -10,10 +10,10 @@ export default function CommentPage({ history }) {
 
     useEffect(() => {
         if (Object.values(comment).length === 0) {
-            GetOne({'id':ID}, 'comment', Library.getText('comment.notLoadComment'), setComment)
-                .then(res => !res ? history.push('/') : null);
+            GetOne({'id':ID, 'count': 'single', 'type': 'comment'}, 'comments', Library.getText('comment.notLoadComment'), setComment)
+                .then(isEx => !isEx ? history.push('/') : null)
         }
     }, [ID, history, comment]);
 
-    return <OneComment {...comment} />
+    return <OneComment {...comment} />;
 }

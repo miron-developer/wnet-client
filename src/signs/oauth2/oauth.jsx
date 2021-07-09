@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { withRouter } from 'react-router';
+import { useHistory } from 'react-router';
 
 import { Library } from 'constants/language';
 import { POSTRequestWithParams } from 'functions/api';
@@ -52,6 +52,15 @@ const SSignOr = styled.div`
 
 let sign = "up";
 
+const localLib = {
+    'successIn': Library.getText('signs.sign-in.success'),
+    'successUp': Library.getText('signs.sign-up.success'),
+    'info': Library.getText('signs.oauth2.info'),
+    'failIn': Library.getText('signs.sign-in.fail'),
+    'failUp': Library.getText('signs.sign-up.fail'),
+    'or': sign => Library.getText('signs.oauth2.or'+sign)
+}
+
 const fetchAuthData = async({history, name, email}) => {
     const res = await POSTRequestWithParams('/sign/oauth/'+sign, {
         "name" : name,
@@ -59,15 +68,15 @@ const fetchAuthData = async({history, name, email}) => {
     });
     
     if (res.err === "ok") {
-        if (sign === "in") Notify('success', Library.getText('signs.sign-in.success'));
+        if (sign === "in") Notify('success', localLib.successIn);
         else {
-            Notify('success', Library.getText('signs.sign-up.success'));
-            Notify('info', Library.getText('signs.oauth2.info').replaceAll('email', email).replaceAll('pswrd', res.data.password), false);
+            Notify('success', localLib.successUp);
+            Notify('info', localLib.info.replaceAll('email', email).replaceAll('pswrd', res.data.password), false);
         }
         history.push('/');
     } else {
-        if (sign === "in") Notify('fail', Library.getText('signs.sign-in.fail') + ' ' + res.err);
-        else Notify('fail', Library.getText('signs.sign-up.fail') + ' ' + res.err);
+        if (sign === "in") Notify('fail', localLib.failIn + ':' + res.err);
+        else Notify('fail', localLib.failUp + ':' + res.err);
     }
 }
 
@@ -162,12 +171,13 @@ const GGAuth = ({history}) => {
     )
 }
 
-const Oauth = ({signType, history}) => {
-    sign=signType;
-    
+export default function Oauth({signType}) {
+    const history = useHistory();
+    sign = signType;
+
     return (
         <>
-            <SSignOr>{Library.getText('signs.oauth2.or'+sign)}</SSignOr>
+            <SSignOr>{localLib.or(sign)}</SSignOr>
             <SOauth2>
                 <FBAuth history={history} />
                 <GGAuth history={history} />
@@ -175,5 +185,3 @@ const Oauth = ({signType, history}) => {
         </>
     )
 }
-
-export default withRouter(Oauth);

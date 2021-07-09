@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react';
+
 import { Library } from 'constants/language';
 import { useInput } from 'functions/form';
 import { RandomKey } from 'functions/content';
+import { DebouncedFuctionWithValue } from 'functions/effects';
 
 import { AllFilter, GroupFilter, PeopleFilter, PostFilter, VideoFilter } from 'search/search-filter/filterDefines';
 import styled from 'styled-components';
@@ -106,17 +109,32 @@ const SSwitchBtnWrapper = styled(SBtnValues)`
     }
 `;
 
+const localLib = {
+    'from': Library.getText('search.filter.from'),
+    'to': Library.getText('search.filter.to'),
+    'close': Library.getText('search.filter.close'),
+}
+
 const filters = [AllFilter, PeopleFilter, GroupFilter, PostFilter, VideoFilter];
 
 const addParams = (params, k, v) => params[k] = v;
 
-const CountFilter = ({param, title, addParams}) => {
-    const min = useInput();
-    const max = useInput();
+const CountFilter = ({short, title, values, curFilter, addParams, setFilter}) => {
+    const min = useInput(values[0]);
+    const max = useInput(values[1]);
     
     const handleChange = (e, isMax = false) => {
-        if (isMax) return max.base.onChange(e) || addParams("".concat(param, 'max'), e.target.value);
-        return min.base.onChange(e) || addParams("".concat(param, 'min'), e.target.value);
+        const index = curFilter.countFilters.findIndex(fil => fil.short === short);
+        if (isMax) {
+            max.base.onChange(e);
+            addParams("".concat(short, 'max'), e.target.value);
+            curFilter.countFilters[index].values[1] = e.target.value;
+        } else {
+            min.base.onChange(e);
+            addParams("".concat(short, 'min'), e.target.value);
+            curFilter.countFilters[index].values[0] = e.target.value;
+        }
+        setFilter({...curFilter});
     }
 
     return (
@@ -124,12 +142,12 @@ const CountFilter = ({param, title, addParams}) => {
             <SFilterTitle>{title}:</SFilterTitle>
             <div className="count-filter-inputs">
                 <SCountFilterInput>
-                    <span>{Library.getText('search.filter.from')}:</span>
+                    <span>{localLib.from}:</span>
                     <input type="number" name="min" value={min.base.value} onChange={e => handleChange(e)} />
                 </SCountFilterInput>
                 
                 <SCountFilterInput>
-                    <span>{Library.getText('search.filter.to')}:</span>
+                    <span>{localLib.to}:</span>
                     <input type="number" name="max" value={max.base.value} onChange={e => handleChange(e, true)} />
                 </SCountFilterInput>
             </div>
@@ -137,36 +155,58 @@ const CountFilter = ({param, title, addParams}) => {
     )
 }
 
-const OneBtnFilter = ({value, param, addParams}) => {
-    const handleClick = () => addParams(param, value);
-
+const OneBtnFilter = ({title, short, fil_short, i, checked, curFilter, addParams, setFilter}) => {
+    const handleClick = () => {
+        const index = curFilter.btnFilters.findIndex(fil => fil['fil_short'] === fil_short);
+        curFilter.btnFilters[index].checked = i;
+        setFilter({...curFilter});
+        addParams(fil_short, short);
+    }
+   
     return (
         <SBtnValueWrapper>
-            <input hidden id={`btn-filter-${param}-${value}`} type="radio" name={param} value={value} onChange={handleClick} />
-            <SBtnValue htmlFor={`btn-filter-${param}-${value}`}>{value}</SBtnValue>
+            <input hidden id={`btn-filter-${fil_short}-${short}`} type="radio" value={short} checked={checked} name={fil_short} onChange={handleClick} />
+            <SBtnValue htmlFor={`btn-filter-${fil_short}-${short}`}>{title}</SBtnValue>
         </SBtnValueWrapper>
     )
 }
 
-const BtnFilter = ({title, param, values = [], addParams}) => {
+const BtnFilter = ({title, fil_short, checked, curFilter, values = [], addParams, setFilter}) => {
     return (
         <SBtnSwitchFilter>
             <SFilterTitle>{title}:</SFilterTitle>
             <SBtnValues>
-                {values.map(value => <OneBtnFilter key={value} value={value} param={param} addParams={addParams} />)}
+                {values.map(
+                    (flt, i) => 
+                    <OneBtnFilter 
+                        key={RandomKey()} 
+                        {...flt} 
+                        fil_short={fil_short} 
+                        i={i} 
+                        checked={checked===i}
+                        curFilter={curFilter} 
+                        addParams={addParams}
+                        setFilter={setFilter}
+                    />
+                )}
             </SBtnValues>
         </SBtnSwitchFilter>
     )
 }
 
-const SwitchFilter = ({title, short, addParams}) => {
-    const handleClick = e => addParams(short, e.target.checked);
+const SwitchFilter = ({title, short, checked, curFilter, addParams, setFilter}) => {
+    const handleClick = e => {
+        const index = curFilter.switchFilters.findIndex(fil => fil.short === short);
+        curFilter.switchFilters[index].checked = e.target.checked;
+        setFilter({...curFilter});
+        addParams(short, e.target.checked ? 1 : 0);
+    }
 
     return (
         <SBtnSwitchFilter>
             <SFilterTitle>{title}:</SFilterTitle>
             <SSwitchBtnWrapper>
-                <input id={`switch-filter-${short}`} type="checkbox" hidden name={short} onChange={handleClick} />
+                <input id={`switch-filter-${short}`} type="checkbox" hidden checked={checked} name={short} onChange={handleClick} />
                 <SSwitchBtn htmlFor={`switch-filter-${short}`}></SSwitchBtn>
             </SSwitchBtnWrapper>
         </SBtnSwitchFilter>
@@ -174,33 +214,34 @@ const SwitchFilter = ({title, short, addParams}) => {
 }
 
 export default function SearchFilter({isFilterClosed, filterIndex, filterParams}) {
-    const curFilter = filters[filterIndex];
+    const [curFilter, setFilter] = useState(filters[filterIndex]);
+    const set = v => DebouncedFuctionWithValue(200)(setFilter, v);
+
+    useEffect(() => setFilter(filters[filterIndex]), [filterIndex])
 
     return (
         <SSearchFilterData className={isFilterClosed ? '' : 'opened'}>
-            <SFilterHint>{Library.getText('search.filter.close')}</SFilterHint>
-
+            <SFilterHint>{localLib.close}</SFilterHint>
             {
                 curFilter.countFilters.map(
-                    ({title, short}) => 
-                    <CountFilter key={RandomKey()} title={title} param={short} addParams={(k, v) => addParams(filterParams, k, v)} />
-                    )
+                    flt => 
+                    <CountFilter key={RandomKey()} {...flt} addParams={(k, v) => addParams(filterParams, k, v)} curFilter={curFilter} setFilter={set} />
+                )
             }
 
             {
                 curFilter.btnFilters.map(
-                    ({title, short, values}) => 
-                    <BtnFilter key={RandomKey()} title={title} param={short} values={values} addParams={(k, v) => addParams(filterParams, k, v)} />
+                    flt => 
+                    <BtnFilter key={RandomKey()} {...flt} addParams={(k, v) => addParams(filterParams, k, v)} curFilter={curFilter} setFilter={set} />
                 )
             }
 
             {
                 curFilter.switchFilters.map(
-                    value => 
-                    <SwitchFilter key={RandomKey()} title={value.title} short={value.short} addParams={(k, v) => addParams(filterParams, k, v)} />
+                    flt => 
+                    <SwitchFilter key={RandomKey()} {...flt} addParams={(k, v) => addParams(filterParams, k, v)} curFilter={curFilter} setFilter={set} />
                 )
             }
-
         </SSearchFilterData>
     )
 }

@@ -29,6 +29,13 @@ const getSR = () => {
 
 const recognition = getSR();
 
+const localLib = {
+    'onStart': Library.getText('common.speech.onStart'),
+    'onEnd': Library.getText('common.speech.onEnd'),
+    'onErrorNoSpeech': Library.getText('common.speech.onErrorNoSpeech'),
+    'onError': Library.getText('common.speech.onError'),
+}
+
 const stopAfter = () => setTimeout(() => recognition?.stop(), 5000);
 
 export default function Speech({callback}) {
@@ -37,11 +44,11 @@ export default function Speech({callback}) {
     if (!SR || !recognition) return null;
     const onClick = () => isStart ? recognition.stop() : recognition.start();
 
-    recognition.onstart = () => setStart(true) || Notify('info', Library.getText('common.speech.onStart')) || stopAfter();
-    recognition.onend = () => setStart(false) || Notify('info', Library.getText('common.speech.onEnd'));
+    recognition.onstart = () => setStart(true) || Notify('info', localLib.onStart) || stopAfter();
+    recognition.onend = () => setStart(false) || Notify('info', localLib.onEnd);
     recognition.onerror = ({error}) => {
-        if (error === "no-speech") return Notify('fail', Library.getText('common.speech.onErrorNoSpeech'));
-        return Notify('fail', Library.getText('common.speech.onError'));
+        if (error === "no-speech") return Notify('fail', localLib.onErrorNoSpeech);
+        return Notify('fail', localLib.onError);
     }
 
     recognition.onresult = ({results}) => callback(results[0][0].transcript) || recognition.stop();

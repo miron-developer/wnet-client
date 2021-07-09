@@ -24,6 +24,12 @@ const SCommentsWrapper = styled.div`
     }
 `;
 
+const SWriteFirstComment = styled.div`
+    margin: 1rem;
+    text-align: center;
+    color: var(--onHoverColor);
+`;
+
 const SComments = styled.div`
     max-height: 60rem;
     overflow: auto;
@@ -36,7 +42,6 @@ const SCommentWrapper = styled.div`
     background: #a08188;
     box-shadow: var(--boxShadow);
 `;
-
 
 const SAnswerComment = styled.div`
     width: 85%;
@@ -53,49 +58,66 @@ const SClippedFiles = styled.div`
 const SCommentAnswers = styled(SAnswerComment)``;
 
 const localLib = {
-    'notLoadClippedFiles': Library.getText('general.notHaveClippedFiles'),
+    'notHaveClippedFiles': Library.getText('general.notHaveClippedFiles'),
     'notLoadComments': Library.getText('general.notLoadComments'),
     'answers': Library.getText('common.comments.answers'),
     'comments': Library.getText('common.comments.comments'),
+    'writeFirstComment': Library.getText('common.comments.writeFirstComment'),
 }
 
+const loadComments = (id, getPart = ()=>{}) => getPart('comments', { 'type': 'comment', 'id': id, 'count': 'many'}, localLib.notLoadComments, true);
+
 export const OneComment = (props) => {
+    const [comment, setComment] = useState({});
     const [files, setFiles] = useState([]);
     const [isOpenedCommentPlash, setOpened] = useState(false);
     const [isOpenedAnswers, setOpenedAnswers] = useState(false);
     const [isLoadedAnswers, setLoadedAnswers] = useState(false);
+    const [isLoadedFiles, setLoadedFiles] = useState(false);
     const {datalist, isStopLoad, setDataList, getPart} = useFromTo([], 10);
 
     const addComments = (...newComments) => setDataList([...datalist, ...newComments]);
-   
+    const changeComment = (newFields = {}) => setComment(Object.assign({}, comment, newFields));
+
     useEffect(() => {
-        if (props.isHaveClippedFiles) GetAll('files', {'type': 'comment', 'id': props.id}, localLib.notLoadClippedFiles, setFiles);
-        if (isOpenedAnswers && !isLoadedAnswers) {
-            getPart('comments', { 'type': 'comment', 'id': props.id }, localLib.notLoadComments, true);
+        if (props.id && !comment.id) return setComment({...props});
+        if (comment.isHaveClippedFiles && !isLoadedFiles) {
+            GetAll('files', {'type': 'comment', 'id': comment.id}, localLib.notHaveClippedFiles, setFiles);
+            setLoadedFiles(true);
+        }
+        if (comment.isHaveChild && isOpenedAnswers && !isLoadedAnswers) {
+            loadComments(comment.id, getPart);
             setLoadedAnswers(true);
         }
-    }, [isOpenedAnswers, isLoadedAnswers, props, getPart])
+    }, [isOpenedAnswers, isLoadedFiles, isLoadedAnswers, comment, props, getPart])
 
-    return !props.id ? null : (
+    return !comment.id ? null : (
         <SCommentWrapper>
             <CommentItem
                 isOpenedCommentPlash={isOpenedCommentPlash}
                 isOpenedAnswers={isOpenedAnswers}
                 setOpened={setOpened}
                 setOpenedAnswers={setOpenedAnswers}
-                {...props}
+                {...comment}
             />
 
             {
                 isOpenedCommentPlash 
                     ? <SAnswerComment>
-                        <LeaveCommentPlash isAnswer={true} id={props.id} type="comment" addComments={addComments} /> 
+                        <LeaveCommentPlash 
+                            isHaveChild={comment.isHaveChild}
+                            isAnswer={true}
+                            id={comment.id}
+                            type="comment" 
+                            addComments={addComments} 
+                            changeComment={changeComment} 
+                        /> 
                     </SAnswerComment>
                     : null
             }
 
             {
-                isOpenedAnswers && !props.isAnswer
+                isOpenedAnswers && !comment.isAnswer
                     ? <SCommentAnswers>
                         <Comments 
                             comments={datalist} 
@@ -105,12 +127,7 @@ export const OneComment = (props) => {
                                     e, 
                                     isStopLoad, 
                                     false, 
-                                    () => getPart(
-                                        'comments', 
-                                        { 'type': 'comment', 'id': props.id }, 
-                                        localLib.notLoadComments, 
-                                        true,
-                                    )
+                                    () => loadComments(comment.id, getPart)
                                 )
                             } 
                         />
@@ -119,7 +136,7 @@ export const OneComment = (props) => {
             }
 
             {
-                props.isHaveClippedFiles
+                comment.isHaveClippedFiles
                     ? <SClippedFiles>
                         <ClippedFiles files={files} />
                     </SClippedFiles>
@@ -129,15 +146,18 @@ export const OneComment = (props) => {
     )
 }
 
-export default function Comments({ isAnswer = false, comments = [], onScroll = ()=>{} }) {
+export default function Comments({ comments = [], isAnswer = false, onScroll = ()=>{} }) {
     return (
         <SCommentsWrapper>
             <h3 className="comments-title">
                 {isAnswer ? localLib.answers : localLib.comments}:
             </h3>
-            <SComments onScroll={onScroll}>
-                {comments.map(comment => <OneComment key={RandomKey()} {...comment} />)}
-            </SComments>
+
+            {
+                comments.length === 0
+                ? <SWriteFirstComment>{localLib.writeFirstComment}</SWriteFirstComment>
+                : <SComments onScroll={onScroll}> {comments.map(comment => <OneComment key={RandomKey()} {...comment} />)}</SComments>
+            }
         </SCommentsWrapper>
     )
 }

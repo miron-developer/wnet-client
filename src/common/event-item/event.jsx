@@ -97,6 +97,17 @@ const SEvent = styled.div`
     }
 `;
 
+const localLib = {
+    'voteSaved': Library.getText('common.event-item.event.voteSaved'),
+    'voteNotSaved': Library.getText('common.event-item.event.voteNotSaved'),
+    'notLoadEvent': Library.getText('common.event-item.event.notLoadEvent'),
+    'invite': Library.getText('common.event-item.event.invite'),
+    'title': Library.getText('common.event-item.event.title'),
+    'datetime': Library.getText('common.event-item.event.datetime'),
+    'desciption': Library.getText('common.event-item.event.description'),
+    'yourVoteIs': Library.getText('common.event-item.event.yourVoteIs'),
+}
+
 const getVoteCounts = (v, v1, v2) => [{
     'title': 'going',
     'count': v,
@@ -128,7 +139,7 @@ export default function Event({id, setHaveAccess = ()=>{}}) {
         event.myVote = typeVote
         for (let [k, v] of Object.entries(votes)) event[k] = v
         setEvent(Object.assign({}, event));
-        Notify('success', Library.getText('common.event-item.event.voteSaved'));
+        Notify('success', localLib.voteSaved);
     }
 
     const ToVote = async(typeVote) => {
@@ -136,18 +147,18 @@ export default function Event({id, setHaveAccess = ()=>{}}) {
             'id'    : id,
             'answer': typeVote
         });
-        if (res.err !== "ok") return Notify('fail', Library.getText('common.event-item.event.voteNotSaved'));
+        if (res.err !== "ok") return Notify('fail', localLib.voteNotSaved);
         return VoteSaved(typeVote, res.data);    
     }
 
     useEffect(() => {
         if (event && Object.values(event).length === 0) {
-            GetOne({'id': id}, "event", Library.getText('event.notLoadEvent'), setEvent)
+            GetOne({'id': id}, "event", localLib.notLoadEvent, setEvent)
                 .then(done => done === true ? setHaveAccess(true) : setHaveAccess(false))
         }
     }, [id, event, setHaveAccess]);
 
-    return Object.values(event).length === 0 ? <SEvent>you dont have access to this event</SEvent> : (
+    return Object.values(event).length === 0 ? null : (
         <SEvent>
             <SEventInfoWrapper>
                 <SEventUserInfo>
@@ -156,13 +167,13 @@ export default function Event({id, setHaveAccess = ()=>{}}) {
                 </SEventUserInfo>
 
                 <SEventInfo>
-                    <SEventInvite className="event-hover-text">{name} {Library.getText('common.event-item.event.invite')}</SEventInvite>
-                    <GEventInfo title={Library.getText('common.event-item.event.title')} info={event.title} />
+                    <SEventInvite className="event-hover-text">{name} {localLib.invite}</SEventInvite>
+                    <GEventInfo title={localLib.title} info={event.title} />
                     <GEventInfo 
-                        title={Library.getText('common.event-item.event.datetime')} 
+                        title={localLib.datetime} 
                         info={DateFromMilliseconds(event.datetime) + " (" + CalculateRelativeDatetime(event.datetime) + ")"} 
                     />
-                    <GEventInfo title={Library.getText('common.event-item.event.description')} info={event.description} />
+                    <GEventInfo title={localLib.desciption} info={event.description} />
                 </SEventInfo>
             </SEventInfoWrapper>
 
@@ -172,7 +183,7 @@ export default function Event({id, setHaveAccess = ()=>{}}) {
                         <GVotes voteTitles={voteTitles} votes={votes} votePercents={votePercents} myVote={myVote} /> 
                     </div> 
                     : <SEventVote>
-                        <SEventVoteYou>{Library.getText('common.event-item.event.yourVoteIs')}:</SEventVoteYou>
+                        <SEventVoteYou>{localLib.yourVoteIs}:</SEventVoteYou>
                         <GYourVote voteTitles={voteTitles} toVote={ToVote} />
                     </SEventVote>
             }

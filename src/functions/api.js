@@ -2,6 +2,11 @@ import { HOST_URL } from 'constants/constants';
 import { Library } from 'constants/language';
 import { Notify } from 'common/app-notification/notification';
 
+const localLib = {
+    '500err': Library.getText('functions.api.500err'),
+    'notSaveComment': Library.getText('functions.effects.notSaveComment'),
+}
+
 const formDataToString = (data = new FormData()) => {
     let res = "";
     for (let [k, v] of data.entries())
@@ -19,7 +24,7 @@ export const Fetching = async(action, data, method = "POST") => {
 
     return await fetch(action, fetchOption)
         .then(res => res.json())
-        .catch(err => Object.assign({}, { 'err': "500: server not response" }));
+        .catch(err => Object.assign({}, { 'err': localLib['500err'] }));
 }
 
 // convert from object to URLSearchParams
@@ -66,15 +71,14 @@ export const GetAll = async(whatGet = "", params, failText = "", set = () => {})
     if (whatGet === "" || !params || failText === "") return set();
 
     const res = await GetDataByCrieteries(whatGet, params);
-
-    if (res.err !== 'ok') return Notify('fail', failText);
-    set(res.data);
+    if (res.err && res.err !== 'ok') return Notify('fail', failText);
+    set(res);
     return true;
 }
 
 // save one comment & render it
 export const SaveComment = async(params = {}) => {
     const res = await POSTRequestWithParams('/s/comment', params);
-    if (res.err !== 'ok') return Notify('fail', Library.getText('functions.effects.notSaveComment'));
-    return res.data.id;
+    if (res.err !== 'ok') return Notify('fail', localLib.notSaveComment);
+    return res.data[0];
 }

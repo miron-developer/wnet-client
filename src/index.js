@@ -14,7 +14,7 @@ const check = async() => {
 }
 
 const init = async() => {
-    await check()
+    await check();
     ReactDOM.render(
         <React.StrictMode>
             <Router>

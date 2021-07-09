@@ -59,6 +59,7 @@ const SPost = styled.div`
     display: flex;
     padding: 1rem;
     margin: 1rem;
+    width: 100%;
     text-decoration: none;
     background: var(--offHoverBG);
     border: 2px solid var(--offHoverBG);
@@ -75,20 +76,23 @@ const SPost = styled.div`
     }
 `;
 
-export default function PostsItem({id, setHaveAccess = ()=>{}}) {
-    const [post, setPost] = useState({});
+export default function PostsItem({
+    id, setHaveAccess = ()=>{},
+    title, body, datetime, carma, isLiked, status, userAvatar, nickname, userID, groupAvatar, groupTitle
+}) {
+    const [post, setPost] = useState({title, body, datetime, carma, isLiked, status, userAvatar, nickname, userID, groupAvatar, groupTitle});
 
-    useEffect(() => {
-        if (Object.values(post).length === 0) {
+    useEffect(()=>{
+        if (!post.title) {
             GetOne({'id': id}, "post", Library.getText('post.notLoadPost'), setPost)
                 .then(done => done === true ? setHaveAccess(true) : setHaveAccess(false))
         }
-    }, [id, post, setHaveAccess])
+    }, [id, title, post, setHaveAccess])
     
     const ava = post.userID ? post.userAvatar : post.groupAvatar;
     const name = post.userID ? post.nickname : post.groupTitle;
 
-    return Object.values(post).length === 0 ? null : (
+    return !post.title ? null : (
         <SPost as={Link} to={`/${Library.getText('common.routes.post')}/${id}`}>
             <SPostUser>
                 <Avatar isUser={true} avatar={ava} status={post.status} />

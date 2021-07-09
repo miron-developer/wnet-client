@@ -44,11 +44,19 @@ const SFormInputNotification = styled.div`
     color: var(--darkRedColor);
 `;
 
+const localLib = {
+    'from': Library.getText('search.filter.from'),
+    'to': Library.getText('search.filter.to'),
+    'required': Library.getText('common.form-input.required'),
+    'length': Library.getText('common.form-input.length'),
+    'values': Library.getText('common.form-input.values'),
+}
+
 const minmaxNotif = (notifType, min, max) => {
     if (min || max) {
         let notif = notifType + " ";
-        if (min) notif += Library.getText('search.filter.from') + " " + min;
-        if (max) notif += " " + Library.getText('search.filter.to') + " " + max;
+        if (min) notif += localLib.from + " " + min;
+        if (max) notif += " " + localLib.to + " " + max;
         return notif;
     }
     return undefined;
@@ -59,9 +67,9 @@ export const Label = ({required, id, labelText}) =>
 
 export default function Input({index, id, type = "text", name, labelText, base, minLength, maxLength, min, max, required = true, placeholder = ""}) {
     let nots = []; // notifications
-    if (required) nots.push(Library.getText('common.form-input.required'));
-    nots.push(minmaxNotif(Library.getText('common.form-input.length'), minLength, maxLength));
-    nots.push(minmaxNotif(Library.getText('common.form-input.values'), min, max));
+    if (required) nots.push(localLib.required);
+    nots.push(minmaxNotif(localLib.length, minLength, maxLength));
+    nots.push(minmaxNotif(localLib.values, min, max));
     nots = nots.filter(not => not);
 
     return (

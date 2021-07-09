@@ -1,4 +1,4 @@
-import { HOST, USER } from "constants/constants";
+import { HOST } from "constants/constants";
 import { AddNavsNotification } from "common/aside/aside";
 import { AddUserNotification } from "common/header/notification/notification";
 import { GetCalled, CloseCalls, UserNotFree, StopShare } from "common/calls/calls";
@@ -53,5 +53,5 @@ export const CreateWSConnection = () => {
 
 export const SendWSMessage = (msgType = 1, receiver = 0, body) => {
     if (wss === null) return { 'err': 'do not sended' };
-    wss.send(JSON.stringify({ "msgType": msgType, "addresser": USER.id.toString(), "receiver": "".concat(receiver), "body": body }));
+    wss.send(JSON.stringify({ "msgType": msgType, "receiver": "".concat(receiver), "body": body }));
 }

@@ -25,40 +25,34 @@ const SSearchSwitchBtn = styled(NavLink)`
     }
 `;
 
+const localLib = {
+    'search': Library.getText('common.routes.searches.search'),
+    'all': Library.getText('common.routes.searches.all'),
+    'user': Library.getText('common.routes.user'),
+    'group': Library.getText('common.routes.group'),
+    'post': Library.getText('common.routes.post'),
+    'video': Library.getText('common.routes.video'),
+}
+
 export default function SearchSwitch() {
     const GSwitchBtn = ({text}) => <div className={`search-switch-${text}`}>{text}</div>
 
     return (
         <SSearchSwitch>
-            <SSearchSwitchBtn 
-                activeClassName="active" 
-                to={"/"+Library.getText('common.routes.searches.search')+"/"+Library.getText('common.routes.searches.all')}
-            >
-                <GSwitchBtn text={Library.getText('common.routes.searches.all')} />
+            {/* <SSearchSwitchBtn activeClassName="active" to={"/" + localLib.search + "/" + localLib.all}>
+                <GSwitchBtn text={localLib.all} />
+            </SSearchSwitchBtn> */}
+            <SSearchSwitchBtn activeClassName="active" to={"/" + localLib.search + "/" + localLib.user}>
+                <GSwitchBtn text={localLib.user} />
             </SSearchSwitchBtn>
-            <SSearchSwitchBtn 
-                activeClassName="active" 
-                to={"/"+Library.getText('common.routes.searches.search')+"/"+Library.getText('common.routes.searches.user')}
-            >
-                <GSwitchBtn text={Library.getText('common.routes.searches.user')} />
+            <SSearchSwitchBtn activeClassName="active" to={"/" + localLib.search + "/" + localLib.group}>
+                <GSwitchBtn text={localLib.group} />
             </SSearchSwitchBtn>
-            <SSearchSwitchBtn 
-                activeClassName="active" 
-                to={"/"+Library.getText('common.routes.searches.search')+"/"+Library.getText('common.routes.group')}
-            >
-                <GSwitchBtn text={Library.getText('common.routes.group')} />
+            <SSearchSwitchBtn activeClassName="active" to={"/" + localLib.search + "/" + localLib.post}>
+                <GSwitchBtn text={localLib.post} />
             </SSearchSwitchBtn>
-            <SSearchSwitchBtn 
-                activeClassName="active" 
-                to={"/"+Library.getText('common.routes.searches.search')+"/"+Library.getText('common.routes.post')}
-            >
-                <GSwitchBtn text={Library.getText('common.routes.post')} />
-            </SSearchSwitchBtn>
-            <SSearchSwitchBtn 
-                activeClassName="active" 
-                to={"/"+Library.getText('common.routes.searches.search')+"/"+Library.getText('common.routes.video')}
-            >
-                <GSwitchBtn text={Library.getText('common.routes.video')} />
+            <SSearchSwitchBtn activeClassName="active" to={"/" + localLib.search + "/" + localLib.video}>
+                <GSwitchBtn text={localLib.video} />
             </SSearchSwitchBtn>
         </SSearchSwitch>
     )

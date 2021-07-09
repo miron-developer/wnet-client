@@ -72,7 +72,7 @@ const localLib = {
 }
 
 export default function CommentItem({ 
-    id, avatar, nickname, body, carma, datetime, isAnswer, isHaveAnswer, isLiked, 
+    id, avatar, nickname, body, carma, datetime, isAnswer, isHaveChild, isLiked, 
     isOpenedCommentPlash, isOpenedAnswers, setOpened, setOpenedAnswers 
 }) {
     return (
@@ -91,7 +91,7 @@ export default function CommentItem({
                 </SCommentSide>
                 <SCommentActionsWrapper>
                     { 
-                        isAnswer === 1
+                        isAnswer
                             ? null 
                             : <SCommentAction onClick={() => setOpened(!isOpenedCommentPlash)}>
                                 <span><i className="fa fa-comment" aria-hidden="true"></i></span>
@@ -99,7 +99,7 @@ export default function CommentItem({
                             </SCommentAction>
                     }
                     { 
-                        isHaveAnswer === 1
+                        isHaveChild
                         ? <SCommentAction onClick={() => setOpenedAnswers(!isOpenedAnswers)} >
                             <span><i className="fa fa-comments" aria-hidden="true"></i></span>
                             <span>{localLib.showAnswers}</span>

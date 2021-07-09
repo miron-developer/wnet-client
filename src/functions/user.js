@@ -4,13 +4,28 @@ import { GetDataByID, POSTRequestWithParams } from 'functions/api';
 import { CloseWSConnection, CreateWSConnection } from 'functions/ws';
 import { Notify } from 'common/app-notification/notification';
 
+const localLib = {
+    'post': Library.getText('common.routes.post'),
+    'video': Library.getText('common.routes.video'),
+    'photo': Library.getText('common.routes.photo'),
+    'user': Library.getText('common.routes.user'),
+    'group': Library.getText('common.routes.group'),
+    'sign': Library.getText('common.routes.signs.sign'),
+    'changeUserDataError': Library.getText('functions.user.changeUserDataError'),
+    'in': Library.getText('common.routes.signs.in'),
+    'logouting': Library.getText('functions.user.logouting'),
+    'logouted': Library.getText('functions.user.logouted'),
+    'rlshipError': Library.getText('functions.user.toFollows.rlshipError'),
+    'successText': type => Library.getText('functions.user.toFollows.' + type),
+}
+
 const ExceptedPaths = [
-    Library.getText('common.routes.post'),
-    Library.getText('common.routes.video'),
-    Library.getText('common.routes.photo'),
-    Library.getText('common.routes.user'),
-    Library.getText('common.routes.group'),
-    Library.getText('common.routes.signs.sign'),
+    localLib.post,
+    localLib.video,
+    localLib.photo,
+    localLib.user,
+    localLib.group,
+    localLib.sign,
 ];
 
 export const CheckIsExceptionPath = () => {
@@ -33,7 +48,7 @@ const changeUserData = async(id) => {
     if (id !== undefined) {
         const res = (await GetDataByID(id, 'user'));
         if (res.err && res.err !== "ok") {
-            return Notify('fail', Library.getText('functions.user.changeUserDataError'))
+            return Notify('fail', localLib.changeUserDataError)
         }
         for (let [k, v] of Object.entries(res[0])) USER[k] = v;
         USER.status = 'online';
@@ -41,6 +56,8 @@ const changeUserData = async(id) => {
     } else {
         for (let k in USER) USER[k] = '';
         USER.status = Date.now().toString();
+        USER.nickname = "nickname";
+        USER.avatar = "/img/default-avatar.png"
         return true;
     }
 }
@@ -60,13 +77,13 @@ export const UserOffline = async() => {
 
 // send to server signal about sign out
 export const SignOut = async(history) => {
-    Notify('info', 'Sign out...');
+    Notify('info', localLib.logouting);
     const res = await POSTRequestWithParams("/sign/out");
     if (res.err !== "ok") return false;
     const isSignOuted = await UserOffline();
     if (!isSignOuted) return;
-    history.push('/sign/in');
-    Notify('success', 'Sign outed!');
+    history.push('/' + localLib.sign + '/' + localLib.in);
+    Notify('success', localLib.logouted);
 }
 
 /**
@@ -88,10 +105,10 @@ export const ToFollow = async(id, isUser = true, actionType = 0, callback = () =
     }
 
     const res = await POSTRequestWithParams('/s/rlsh', params);
-    if (res.err !== "ok") return Notify('fail', Library.getText('functions.user.toFollows.rlshipError'));
+    if (res.err !== "ok") return Notify('fail', localLib.rlshipError);
 
     callback(res.data);
-    Notify('success', Library.getText('functions.user.toFollows.' + successTexts[actionType]));
+    Notify('success', localLib.successText(successTexts[actionType]));
 
     if (actionType === 0 || actionType === 4) {
         if (!isUser) return USER.groupsCount++;

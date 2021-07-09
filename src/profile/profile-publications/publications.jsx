@@ -26,6 +26,7 @@ const SProfilePrivate = styled.div`
 
 const SPublications = styled.div`
     height: 80vh;
+    padding: 2rem;
     overflow: auto;
 `;
 

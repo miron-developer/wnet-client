@@ -1,4 +1,4 @@
-import { withRouter } from "react-router";
+import { useHistory } from "react-router";
 
 import { Library } from "constants/language";
 import { USER } from "constants/constants";
@@ -26,10 +26,11 @@ const STitle = styled.h2`
 `;
 
 
-const ConfirmChange = ({history}) => {
+export default function ConfirmChange() {
     const codeFromURI = decodeURI(window.location.pathname).split("/")[4]
     const code = useInput(codeFromURI);
     const fields = [ code ];
+    const history = useHistory();
 
     const onSuccess = async() => {
         Notify('success', 'Profile is changed!');
@@ -40,7 +41,7 @@ const ConfirmChange = ({history}) => {
 
     return (
         <SSettingsBody>
-            <STitle>Confirm change</STitle>
+            <STitle>{Library.getText('account.settings.confirm.confirmChange')}</STitle>
 
             <form action="/e/settings/c" onSubmit={async(e)=> {
                 afterStyles = await SubmitFormData(e, afterStyles, fields, undefined, onSuccess, onFail);
@@ -54,5 +55,3 @@ const ConfirmChange = ({history}) => {
         </SSettingsBody>
     )
 }
-
-export default withRouter(ConfirmChange)

@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { USER } from 'constants/constants';
 import { Library } from 'constants/language';
 import { POSTRequestWithParams } from 'functions/api';
+import { GET_FILE_SRC } from 'functions/content';
 import { ClosePopup } from 'common/popup/popup';
 import { Notify } from 'common/app-notification/notification';
 
@@ -94,10 +95,18 @@ const SControlActionsText = styled.span`
     margin: 5px;
 `;
 
+const localLib = {
+    'link': type => Library.getText('common.routes.'+type),
+    'edit': Library.getText('common.gallery-item.controlActions.edit'),
+    'remove': Library.getText('common.gallery-item.controlActions.remove'),
+    'removeFail': Library.getText('common.gallery-item.notRemoved')
+}
+
+// TODO: edit & remove
 const removeHandle = async(e, id, removeFromCatalogue) => {
     e.preventDefault();
     const res = await POSTRequestWithParams('/gallery/rm', { 'id': id });
-    if (res.err !== "ok") return Notify('fail', Library.getText('common.gallery-item.notRemoved'));
+    if (res.err !== "ok") return Notify('fail', localLib.removeFail);
     removeFromCatalogue();
 }
 
@@ -107,24 +116,25 @@ const editHandle = (e, id, history) => {
     ClosePopup();
 }
 
-const GalleryItem = ({id, type, title, src, preview, userID, groupID, history, removeFromCatalogue}) => {
+export default function GalleryItem({id, type, title, src, preview, userID, groupID, removeFromCatalogue}) {
     const [isActionOpened, setIsActionsOpened] = useState(false);
+    const history = useHistory();
     const ownerID = userID ? userID : groupID;
     const isMy = ownerID === USER.id;
 
     return (
-        <SGalleryItemWrapper to={"/"+Library.getText('common.routes.'+type)+"/"+id} onClick={ClosePopup} >
+        <SGalleryItemWrapper to={"/"+localLib.link(type)+"/"+id} onClick={ClosePopup} >
             <SGalleryItem>
                 <SGalleryItemSrc>
                     {
                         type === 'video' 
                             ? <>
-                                <video poster={preview}></video> 
+                                <video poster={GET_FILE_SRC(preview)}></video> 
                                 <SGalleryItemVideo>
                                     <i className="fa fa-video-camera" aria-hidden="true"></i>
                                 </SGalleryItemVideo>
                             </>
-                            : <img src={src} alt={title} />
+                            : <img src={GET_FILE_SRC(src)} alt={title} />
                     }
                 </SGalleryItemSrc>
                 <SGalleryItemTitle>{title}</SGalleryItemTitle>
@@ -141,11 +151,11 @@ const GalleryItem = ({id, type, title, src, preview, userID, groupID, history, r
                                     ? <SControlActions>
                                         <div className="control-actions-edit" onClick={e => editHandle(e, id, history)}>
                                             <i className="fa fa-pencil" aria-hidden="true"></i>
-                                            <SControlActionsText>{Library.getText('common.gallery-item.controlActions.edit')}</SControlActionsText>
+                                            <SControlActionsText>{localLib.edit}</SControlActionsText>
                                         </div>
                                         <div className="control-actions-remove" onClick={e => removeHandle(e, id, removeFromCatalogue)}>
                                             <i className="fa fa-trash" aria-hidden="true"></i>
-                                            <SControlActionsText>{Library.getText('common.gallery-item.controlActions.remove')}</SControlActionsText>
+                                            <SControlActionsText>{localLib.remove}</SControlActionsText>
                                         </div>
                                     </SControlActions>
                                     : null 
@@ -159,5 +169,3 @@ const GalleryItem = ({id, type, title, src, preview, userID, groupID, history, r
         </SGalleryItemWrapper>
     )
 }
-
-export default withRouter(GalleryItem);

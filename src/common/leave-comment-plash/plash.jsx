@@ -1,13 +1,13 @@
 import { useState } from "react";
 
 import { Library } from "constants/language";
+import { USER } from "constants/constants";
 import { UploadFile } from "functions/file";
+import { SaveComment } from "functions/api";
 import Clips from 'common/clips/clips';
 import SendText from 'common/send-text/msg';
 
 import styled from "styled-components";
-import { SaveComment } from "functions/api";
-import { USER } from "constants/constants";
 
 const SOneBtn = styled.div`
     width: 3rem;
@@ -54,18 +54,23 @@ const SCommentInputWrapper = styled.div`
     width: 100%;
 `;
 
-const sendTextMsg = async(value = "", preloadedFiles = [], params = {}, updText = ()=>{}, setFiles = ()=>{}, addComments = (...comments)=>{}) => {
+const sendTextMsg = async(value = "", preloadedFiles = [], params = {}, updText = ()=>{}, setFiles = ()=>{}, addComments = (...comments)=>{}, changeComment = ()=>{}) => {
     if (value === "") return;
     
+    params.isHaveClippedFiles = preloadedFiles.length > 0 ? 1 : 0;
     params['body'] = value;
     const commentID = await SaveComment(params);
 
+    params[params.type+"ID"] = params.id;
     params.id = commentID;
     params.datetime = Date.now().toString();
     params.avatar = USER.avatar;
     params.nickname = USER.nickname;
     params.userID = USER.id;
+    params.isHaveChild = 0;
+
     addComments(params);
+    if (params.type === "comment") changeComment({isHaveChild: 1});
     
     if (preloadedFiles.length > 0) {
         preloadedFiles.forEach(file => UploadFile(file.type, file.file, 'comment', commentID));
@@ -82,13 +87,13 @@ const OneBtn = ({color, alt, srcIcon, onClick}) => {
     )
 }
 
-export default function LeaveCommentPlash({ type, id, isAnswer = false, addComments }) {
+export default function LeaveCommentPlash({ type, id, isAnswer = false,  isHaveChild = false, addComments = ()=>{}, changeComment = ()=>{} }) {
     const [preloadedFiles, setFiles] = useState([]);
     const params = {
-        'type': 'comment',
-        'commentType': type,
+        'type': type,
         'id': id,
         'isAnswer': isAnswer ? 1 : 0,
+        'isHaveChild': isHaveChild ? 1 : 0,
     }
 
     return (
@@ -98,7 +103,7 @@ export default function LeaveCommentPlash({ type, id, isAnswer = false, addComme
             <SCommentInputWrapper>
                 <Clips Wrapper={OneBtn} preloadedFiles={preloadedFiles} setFiles={setFiles} />
             
-                <SendText Wrapper={OneBtn} send={(value, updText) => sendTextMsg(value, preloadedFiles, params, updText, setFiles, addComments)} />
+                <SendText Wrapper={OneBtn} send={(value, updText) => sendTextMsg(value, preloadedFiles, params, updText, setFiles, addComments, changeComment)} />
             </SCommentInputWrapper>
         </SCommentWrapper>
     )

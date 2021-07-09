@@ -51,23 +51,28 @@ export const ScrollHandler = Debounce(async(e, isStopLoad, isScrollingToTop = fa
 
     const parent = e.target;
     const pRec = parent.getBoundingClientRect();
-
     if (
         (isScrollingToTop && parent.scrollTop === 0) ||
-        (!isScrollingToTop && parent.scrollTop === Math.round(parent.scrollHeight - pRec.height))
+        (!isScrollingToTop && parent.scrollTop >= Math.round((parent.scrollHeight - pRec.height) * .75))
     ) {
-        const children = parent.childNodes;
-        const priorEdgeChild = isScrollingToTop ? children[0] : children[children.length - 1];
+        const priorEdgeChildNum = isScrollingToTop ? 0 : parent.childElementCount - 1;
 
-        if (await loadCallback()) parent.scrollTo(0, priorEdgeChild.offsetTop);
+        if (await loadCallback()) {
+            setTimeout(() => {
+                // smooth scroll
+                parent.childNodes[priorEdgeChildNum].scrollIntoView({ behavior: "smooth" });
+            }, 100);
+        }
     }
 }, 100);
 
 const checkPermission = async(name) => {
-    const result = await navigator.permissions?.query({ 'name': name });
-    if (result?.state === 'granted') {
+    if (!navigator.permissions) return false;
+    const result = await navigator.permissions.query({ 'name': name });
+    if (!result.state) return false;
+    if (result.state === 'granted') {
         return true;
-    } else if (result?.state === 'prompt') {
+    } else if (result.state === 'prompt') {
         return true;
     }
     return false;

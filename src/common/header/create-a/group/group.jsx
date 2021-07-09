@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { withRouter } from "react-router";
+import { useHistory } from "react-router";
 
 import { Library } from "constants/language";
 import { useInput } from "functions/form";
@@ -12,17 +12,6 @@ import TypeBtns from 'common/header/create-a/type-btns/btns';
 import TypeBtnsHints from 'common/header/create-a/type-btns-hints/hints';
 import FieldTextarea from 'common/header/create-a/field-textarea/textarea';
 import styled from "styled-components";
-
-const SNoteText = styled.div`
-    position: fixed;
-    right: 12vw;
-    top: 50%;
-    color: var(--onHoverColor);
-    background: red;
-    padding: .5rem;
-    border-radius: 5px;
-`;
-
 
 const SUploadAvaWrapper = styled.div`
     width: auto;
@@ -39,9 +28,24 @@ const SUploadAvaWrapper = styled.div`
     }
 `;
 
+const localLib = {
+    'fillTitle': Library.getText('common.header.create-a.fillTitle'),
+    'fillDescription': Library.getText('common.header.create-a.fillDescription'),
+    'clickToChange': Library.getText('account.gallery.upload.clickToChange'),
+    'avatar': Library.getText('account.settings.account.avatar'),
+    'title': Library.getText('common.event-item.event.title'),
+    'post': Library.getText('common.header.create-a.createItems.post'),
+    'public': Library.getText('account.settings.account.public'),
+    'private': Library.getText('account.settings.account.private'),
+    'publicHint': Library.getText('common.header.create-a.group.publicHint'),
+    'privateHint': Library.getText('common.header.create-a.group.privateHint'),
+    'description': Library.getText('profile.data.description'),
+    'create': Library.getText('common.header.create-a.create'),
+}
+
 const customValidation = (title, description) => {
-    if (title.length <= 0) return Library.getText('common.header.create-a.event.fillTitle');
-    if (description.length <= 0) return Library.getText('common.header.create-a.event.fillDescription');
+    if (title.length <= 0) return localLib.fillTitle;
+    if (description.length <= 0) return localLib.fillDescription;
 }
 
 const getParams = async(groupType, title, description, avatarFile, choosenFollowers = [], setText) => {
@@ -60,15 +64,15 @@ const getParams = async(groupType, title, description, avatarFile, choosenFollow
     return params;
 }
 
-const CreateGroup = ({ Wrapper, history, onSubmit = ()=>{} }) => {
+export default function CreateGroup({ Wrapper, onSubmit = ()=>{} }) {
     const title = useInput('');
     const description = useInput('');
+    const history = useHistory();
     const [groupType, setGroupType] = useState(0);
     const [avatarFile, setAvatarFile] = useState({});
     const [avatarSrc, setAvatarSrc] = useState('/img/default-avatar.png');
     const [choosenFollowers, setChoosenFollowers] = useState([]);
-    const [noteText, setText] = useState('');
-
+    
     const addChoosens = (id) => setChoosenFollowers([...choosenFollowers, { 'id': id }]);
     const removeChoosens = (id) => setChoosenFollowers(choosenFollowers.filter(flwr => flwr.id !== id));
 
@@ -78,52 +82,45 @@ const CreateGroup = ({ Wrapper, history, onSubmit = ()=>{} }) => {
         <Wrapper onSubmit={ e =>
             onSubmit(
                 e, history, 'group', 
-                getParams(groupType, title.base.value, description.base.value, avatarFile, choosenFollowers, setText),
+                getParams(groupType, title.base.value, description.base.value, avatarFile, choosenFollowers),
                 customValidation(title.base.value, description.base.value),
-                setText
             )        
         }>
-            { noteText.length === 0 ? null : <SNoteText>{noteText}</SNoteText> }
 
             <SUploadAvaWrapper>
-                <span>{Library.getText('profile-path.settings.account.avatar')}: ({Library.getText('profile-path.gallery.upload.clickToChange')})</span>
+                <span>{localLib.avatar}: ({localLib.clickToChange})</span>
                 <div className="ava-change" onClick={() => PreloadFile('image/*', preloadCB)}>
                     <img src={avatarSrc} alt="group avatar"/>
                 </div>
             </SUploadAvaWrapper>
 
-            <Input type="text" base={title.base} labelText={Library.getText('common.event-item.event.title') + ":"} 
+            <Input type="text" base={title.base} labelText={localLib.title + ":"} 
                 minLength="9" maxLength="30" placeholder="My journay" 
             />
 
-            <TypeBtns title={Library.getText('common.header.create-a.createItems.post')} type={groupType}
+            <TypeBtns title={localLib.post} type={groupType}
                 btns={[{
                     'id': 'create-group-public',
                     'btnType': 0,
-                    'text': Library.getText('profile-path.settings.account.public'),
+                    'text': localLib.public,
                     'onChange': () => setGroupType(0),
                 }, {
                     'id': 'create-group-private',
                     'btnType': 1,
-                    'text': Library.getText('profile-path.settings.account.private'),
+                    'text': localLib.private,
                     'onChange': () => setGroupType(1),
                 }]}
             />
 
-            <TypeBtnsHints hints={[
-                Library.getText('common.header.create-a.group.publicHint'),
-                Library.getText('common.header.create-a.group.privateHint'),
-            ]} />
+            <TypeBtnsHints hints={[localLib.publicHint, localLib.privateHint]} />
 
             <ChooseList type="users" choosenList={choosenFollowers} add={addChoosens} remove={removeChoosens} 
                 title="Choose followers to invite:" params={{'type':'followers', 'flwType': 'all'}}
             /> 
             
-            <FieldTextarea title={Library.getText('profile.data.description')} textareaBase={description.base} />
+            <FieldTextarea title={localLib.description} textareaBase={description.base} />
 
-            <SubmitBtn value={Library.getText('common.header.create-a.create') + "!"} />
+            <SubmitBtn value={localLib.create + "!"} />
         </Wrapper>
     )
 }
-
-export default withRouter(CreateGroup);

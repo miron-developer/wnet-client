@@ -5,6 +5,7 @@ import Avatar from 'common/avatar/avatar';
 import Datetime from 'common/datetime/datetime';
 
 import styled from 'styled-components';
+import { USER } from 'constants/constants';
 
 const SMessengerBody = styled.div`
     width: 100%;
@@ -62,9 +63,17 @@ const SChat = styled(Link)`
     }
 `
 
-export default function Chat({id, receiverUserID, receiverGroupID, userAvatar, nickname, status, groupAvatar, groupTitle, msgBody, msgDatetime}) {
+const getOponentID = (isUser, senderUserID, receiverUserID, receiverGroupID) => {
+    if (isUser) {
+        if (receiverUserID !== USER.id) return receiverUserID;
+        return senderUserID;
+    }
+    return receiverGroupID;
+}
+
+export default function Chat({id, senderUserID, receiverUserID, receiverGroupID, userAvatar, nickname, status, groupAvatar, groupTitle, msgBody, msgDatetime}) {
     const isUser = nickname ? true : false;
-    const opponentID = isUser ? receiverUserID : receiverGroupID;
+    const opponentID = getOponentID(isUser, senderUserID, receiverUserID, receiverGroupID);
     const type = isUser ? 'user' : 'group';
     const name = isUser ? nickname : groupTitle;
     const chatID = type[0] + opponentID;

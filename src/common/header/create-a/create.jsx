@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import { Library } from 'constants/language';
 import { POSTRequestWithParams } from 'functions/api';
+import { Notify } from 'common/app-notification/notification';
 import { PopupOpen, ClosePopup } from 'common/popup/popup';
 
 import HeaderPopups from 'common/header/header-popups/popups';
@@ -41,25 +42,37 @@ const SWrapperForm = styled.form`
     margin: 1rem;
 `;
 
-const types = {
+const localLib = {
     'post': Library.getText('common.header.create-a.createItems.post'),
     'event': Library.getText('common.header.create-a.createItems.event'),
     'group': Library.getText('common.header.create-a.createItems.group'),
+    'photo': Library.getText('common.header.create-a.createItems.photo'),
+    'video': Library.getText('common.header.create-a.createItems.video'),
+    'canNotSaved': Library.getText('common.header.create-a.canNotSaved'),
+    'link': type => Library.getText('common.routes.'+type),
+    'create': Library.getText('common.header.create-a.create'),
 }
 
-const onSubmit = async(e, history, type, getParams = new Promise(), valErr, setText = ()=>{}, onSuccessCreate = ()=>{}) => {
+const types = {
+    'post': localLib.post,
+    'event': localLib.event,
+    'group': localLib.group,
+    'photo': localLib.photo,
+    'video': localLib.video,
+}
+
+const onSubmit = async(e, history, type, getParams = new Promise(), valErr, onSuccessCreate = ()=>{}) => {
     e.preventDefault();
 
-    if (valErr) return setText(valErr);
-    setText('');
+    if (valErr) return Notify('fail', valErr);
    
     const params = await getParams;
     const res = await POSTRequestWithParams('/s/'+type, params);
-    if (res.err !== 'ok') return setText(Library.getText('common.header.create-a.canNotSaved') + " " + res.err);
+    if (res.err !== 'ok') return Notify('fail', localLib.canNotSaved + " " + res.err);
 
     onSuccessCreate(res.data);
     ClosePopup();
-    history.push('/' + Library.getText('common.routes.'+type) + '/' + res.data[0]);
+    history.push('/' + localLib.link(type) + '/' + res.data[0]);
 }
 
 const PopupWrapper = ({ e, type, CreatePopup, Wrapper }) => {
@@ -67,7 +80,7 @@ const PopupWrapper = ({ e, type, CreatePopup, Wrapper }) => {
 
     return (
         <SCreateWrapper>
-            <SCreateTitle> {Library.getText('common.header.create-a.create') + ' ' + types[type]} </SCreateTitle>
+            <SCreateTitle> {localLib.create + ' ' + types[type]} </SCreateTitle>
             <CreatePopup Wrapper={Wrapper} onSubmit={onSubmit} />
         </SCreateWrapper>
     )
@@ -93,23 +106,23 @@ export default function CreateA() {
             </div>
 
             <HeaderPopupsBody isOpened={isOpened} >
-                <CreateItem createText={Library.getText('common.header.create-a.createItems.post')}  icon="sticky-note" 
+                <CreateItem createText={localLib.post}  icon="sticky-note" 
                     onClick={e => PopupOpen(PopupWrapper, { e, 'type': 'post', 'CreatePopup': CreatePost, 'Wrapper': SWrapperForm })}
                 />
 
-                <CreateItem createText={Library.getText('common.header.create-a.createItems.group')} icon="users" 
+                <CreateItem createText={localLib.group} icon="users" 
                     onClick={e => PopupOpen(PopupWrapper, { e, 'type': 'group', 'CreatePopup': CreateGroup, 'Wrapper': SWrapperForm })}
                 />
 
-                <CreateItem createText={Library.getText('common.header.create-a.createItems.event')} icon="calendar"
+                <CreateItem createText={localLib.event} icon="calendar"
                     onClick={e => PopupOpen(PopupWrapper, { e, 'type': 'event', 'CreatePopup': CreateEvent, 'Wrapper': SWrapperForm })}
                 />
 
-                <CreateItem createText="photo" icon="camera"
+                <CreateItem createText={localLib.photo} icon="camera"
                     onClick={e => PopupOpen(PopupWrapper, { e, 'type': 'photo', 'CreatePopup': CreatePhoto, 'Wrapper': SWrapperForm })}
                 />
 
-                <CreateItem createText="video" icon="video-camera"
+                <CreateItem createText={localLib.video} icon="video-camera"
                     onClick={e => PopupOpen(PopupWrapper, { e, 'type': 'video', 'CreatePopup': CreateVideo, 'Wrapper': SWrapperForm })}
                 />
             </HeaderPopupsBody>

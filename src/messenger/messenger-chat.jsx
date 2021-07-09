@@ -47,6 +47,8 @@ export const CreateMessage = async(msgType, body, file) => {
     chatContainer.scrollTo(0, chatContainer.scrollHeight);
 }
 
+const loadMessages = (id, type, getPart) => getPart('messages', {'id': id, 'type': type}, Library.getText('messenger.chat.notLoadMessages'), false)
+
 export default function Chat({match, history}) {
     const ID = match.params.id;
     const pureID = ID.replace(ID[0], '');
@@ -61,7 +63,7 @@ export default function Chat({match, history}) {
 
     useEffect(()=> {
         if (datalist.length === 0 && !isLoaded) {
-            getPart('messages', {'id': pureID, 'type': type}, Library.getText('messenger.chat.notLoadMessages'), false)
+            loadMessages(pureID, type, getPart)
             setLoaded(true);
         } else {
             const chatContainer = document.getElementById('chat-container');
@@ -69,9 +71,9 @@ export default function Chat({match, history}) {
         }
     }, [pureID, type, chatData, datalist, isLoaded, history, getPart]);
 
-    if (!chatData) return history.push('/messenger') || null;
+    if (!chatData) return history.push('/' + Library.getText('common.routes.messenger')) || null;
     return (
-        <div className="chat-wrapper">
+        <>
             <ChatHeader id={pureID} isUser={isUser} avatar={chatData.avatar} status={chatData.status} name={chatData.name} />
             <ChatMessages 
                 onScroll={
@@ -80,12 +82,12 @@ export default function Chat({match, history}) {
                         e, 
                         isStopLoad, 
                         true, 
-                        () => getPart('messages', {'id': pureID, 'type': type}, Library.getText('messenger.chat.notLoadMessages'), false)
+                        () => loadMessages(pureID, type, getPart)
                     )
                 } 
                 messages={datalist} 
             />
             <ChatTypingSide />
-        </div>
+        </>
     )
 }

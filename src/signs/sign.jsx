@@ -45,34 +45,47 @@ const SSign = styled.div`
     }
 `;
 
+const localLib = {
+    'in': Library.getText('common.routes.signs.in'),
+    'signIn': Library.getText('signs.sign.in'),
+    'up': Library.getText('common.routes.signs.up'),
+    'signUp': Library.getText('signs.sign.up'),
+    're': Library.getText('common.routes.signs.re'),
+    'signRe': Library.getText('signs.sign.re'),
+    'rst': Library.getText('common.routes.signs.rst'),
+    'signRst': Library.getText('signs.sign.rst'),
+    's': Library.getText('common.routes.signs.s'),
+    'singS': Library.getText('signs.sign.s'),
+}
+
 const Routes = [
     {
-        href: "/"+Library.getText('common.routes.signs.in'),
-        title: Library.getText('signs.sign.in'),
+        href: "/" + localLib.in,
+        title: localLib.signIn,
         isExact: false,
         component: SignIn,
     },
     {
-        href: "/"+Library.getText('common.routes.signs.up'),
-        title: Library.getText('signs.sign.up'),
+        href: "/" + localLib.up,
+        title: localLib.signUp,
         isExact: false,
         component: SignUp,
     },
     {
-        href: "/"+Library.getText('common.routes.signs.re'),
-        title: Library.getText('signs.sign.re'),
+        href: "/" + localLib.re,
+        title: localLib.signRe,
         isExact: false,
         component: ResetPassword,
     },
     {
-        href: "/"+Library.getText('common.routes.signs.rst'),
-        title: Library.getText('signs.sign.rst'),
+        href: "/" + localLib.rst,
+        title: localLib.signRst,
         isExact: false,
         component: RestorePassword,
     },
     {
-        href: "/"+Library.getText('common.routes.signs.s'),
-        title: Library.getText('signs.sign.s'),
+        href: "/" + localLib.s,
+        title: localLib.singS,
         isExact: false,
         component: SaveUser,
     },
@@ -93,7 +106,7 @@ export default function Sign({match}) {
                             ({href, component, isExact }, index) => <Route key={index} exact={isExact} path={match.url+href} component={component} />
                         )
                     }
-                    <Redirect to={match.url+"/"+Library.getText('common.routes.signs.in')} />
+                    <Redirect to={match.url + "/" + localLib.in} />
                 </Switch>
             </SSignFormSide>
         </SSign>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, withRouter } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
 
 import { USER } from 'constants/constants';
 import { Library } from 'constants/language';
@@ -122,6 +122,21 @@ const SNotification = styled.span`
 let add = ()=>{};
 export const AddNavsNotification = (whichNotif, howMany) => add(whichNotif, howMany);
 
+const localLib = {
+    'logout': Library.getText('common.aside.logout'),
+    'home': Library.getText('common.aside.navs.home'),
+    'user': Library.getText('common.routes.user'),
+    'profile': Library.getText('common.aside.navs.profile'),
+    'rMessenger': Library.getText('common.routes.messenger'),
+    'nMessenger': Library.getText('common.aside.navs.messenger'),
+    'account': Library.getText('common.routes.account.account'),
+    'rFriends': Library.getText('common.routes.account.friends.friends'),
+    'nFriends': Library.getText('common.aside.navs.friends'),
+    'rGroups': Library.getText('common.routes.account.groups'),
+    'nGroups': Library.getText('common.aside.navs.groups'),
+    'search': Library.getText('common.routes.searches.search'),
+}
+
 // Generate navlink
 const GNavLink = ({isExact, index, to, linkText, nots}) => {
     const isHave = nots[index] > 0;
@@ -134,7 +149,8 @@ const GNavLink = ({isExact, index, to, linkText, nots}) => {
     )
 }
 
-const Aside = ({history}) => {
+export default function Aside() {
+    const history = useHistory();
     const [nots, SetNots] = useState([0, 0, 0, 0]);
     add = (whichNotif, howMany = 0) => {
         nots[whichNotif] += howMany;
@@ -150,7 +166,7 @@ const Aside = ({history}) => {
 
                 <SAsideTop>
                     <SNickname>{USER.nickname}</SNickname>
-                    <SLogout onClick={() => SignOut(history)}>{Library.getText('common.aside.logout')}</SLogout>
+                    <SLogout onClick={() => SignOut(history)}>{localLib.logout}</SLogout>
                 </SAsideTop>
             </SAsideTop>
 
@@ -160,42 +176,42 @@ const Aside = ({history}) => {
                     index={0} 
                     nots={nots}
                     to="/" 
-                    linkText={Library.getText('common.aside.navs.home')}
+                    linkText={localLib.home}
                 />
 
                 <GNavLink
                     isExact={true} 
                     index={0} 
-                    to={'/' + Library.getText('common.routes.user') +`/${USER.id}`} 
-                    linkText={Library.getText('common.aside.navs.profile')}
+                    to={'/' + localLib.user +`/${USER.id}`} 
+                    linkText={localLib.profile}
                     nots={nots} 
                 />
 
                 <GNavLink
                     index={1} 
-                    to={"/"+Library.getText('common.routes.messenger')}
-                    linkText={Library.getText('common.aside.navs.messenger')} 
+                    to={"/" + localLib.rMessenger}
+                    linkText={localLib.nMessenger} 
                     nots={nots} 
                 />
 
                 <GNavLink
                     index={2} 
-                    to={"/"+ Library.getText('common.routes.profile.profile') + '/' + Library.getText('common.routes.profile.friends.friends') + "/"}
-                    linkText={Library.getText('common.aside.navs.friends')}
+                    to={"/" + localLib.account + '/' + localLib.rFriends + "/"}
+                    linkText={localLib.nFriends}
                     nots={nots} 
                 />
 
                 <GNavLink
                     index={3} 
-                    to={"/"+ Library.getText('common.routes.profile.profile') + '/' + Library.getText('common.routes.profile.groups')}
-                    linkText={Library.getText('common.aside.navs.groups')}
+                    to={"/" + localLib.account + '/' + localLib.rGroups}
+                    linkText={localLib.nGroups}
                     nots={nots} 
                 />
 
                 <GNavLink
                     index={0} 
-                    to={"/"+ Library.getText('common.routes.searches.search')}
-                    linkText={Library.getText('common.routes.searches.search')} 
+                    to={"/" + localLib.search}
+                    linkText={localLib.search} 
                     nots={nots} 
                 />
             </SNavs>
@@ -204,5 +220,3 @@ const Aside = ({history}) => {
         </SAside>
     )
 }
-
-export default withRouter(Aside);

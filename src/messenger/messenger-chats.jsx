@@ -13,21 +13,21 @@ const SChats = styled.div`
     overflow: auto;
 `;
 
+const loadChats = (getPart = ()=>{}) => getPart('chats', {}, Library.getText('messenger.chats.notLoad'), true)
+
 export default function Chats() {
     const [isLoaded, setLoaded] = useState(false);
     const { datalist, isStopLoad, getPart } = useFromTo();
 
     useEffect(() => {
         if (!isLoaded) {
-            getPart('chats', {}, Library.getText('messenger.chats.notLoad'), true)
+            loadChats(getPart);
             setLoaded(true);
         }
     }, [isLoaded, getPart]);
 
     return (
-        <SChats 
-            onScroll={e => ScrollHandler(e, isStopLoad, false, () => getPart('chats', {}, Library.getText('messenger.chats.notLoad'), true))}
-        >
+        <SChats onScroll={e => ScrollHandler(e, isStopLoad, false, () => loadChats(getPart))}>
             {datalist.map(chat => <ChatItem key={RandomKey()} {...chat} />)}
         </SChats>
     )

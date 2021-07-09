@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 
-import { COMMENT_POST } from "constants/mocks";
 import { Library } from "constants/language";
 import { GetAll } from "functions/api";
 import { ScrollHandler } from "functions/effects";
@@ -16,6 +15,17 @@ const SClippedFilesWrapper = styled.div`
     margin: 1rem;
 `;
 
+const SPostWrapper = styled.div`
+    padding: 2rem;
+`;
+
+const localLib = {
+    'notHaveClippedFiles': Library.getText('general.notHaveClippedFiles'),
+    'notLoadComments': Library.getText('general.notLoadComments'),
+}
+
+const loadComments = (id, getPart = ()=>{}) => getPart('comments', { 'type': 'post', 'id': id, 'count': 'many' }, localLib.notLoadComments, true);
+
 export default function PostPage({ history }) {
     const ID = window.location.pathname.split('/')[2];
     const [isHaveAccess, setHaveAccess] = useState();
@@ -23,19 +33,18 @@ export default function PostPage({ history }) {
     const [isLoadedFiles, setLoadedFiles] = useState(false);
     const [clippedFiles, setClippedFiles] = useState([]);
 
-    const [isStopLoad, setStopLoad] = useState(false);
-    const { datalist, setDataList, getPart } = useFromTo();
+    const { datalist, isStopLoad, setDataList, getPart } = useFromTo();
     
     const addComments = (...newComments) => setDataList([...datalist, ...newComments]);
 
     useEffect(() => {
         if (!isHaveAccess) return null;
         if (!isLoadedFiles) {
-            GetAll('files', { 'type': 'post', 'id': ID }, "", setClippedFiles)
+            GetAll('files', { 'type': 'post', 'id': ID }, localLib.notHaveClippedFiles, setClippedFiles)
             setLoadedFiles(true);
         }
         if (!isLoadedComments) {
-            getPart('comments', { 'type': 'post', 'id': ID }, "", true, setStopLoad);
+            loadComments(ID, getPart);
             setLoadedComments(true);
         }
     }, [ID, isLoadedFiles, isLoadedComments, isHaveAccess, history, getPart]);
@@ -43,36 +52,27 @@ export default function PostPage({ history }) {
     if (isHaveAccess === false) return history.push("/") || null;
 
     return (
-        <div className="post-wrapper">
+        <SPostWrapper>
             <PostItem id={ID} setHaveAccess={setHaveAccess} />
 
-            {
-                isHaveAccess 
-                    ? <>
-                        <SClippedFilesWrapper>
-                            <ClippedFiles files={clippedFiles} />
-                        </SClippedFilesWrapper>
-
-                        <LeaveCommentPlash id={ID} type="post" addComments={addComments} />
-                        
-                        {
-                            datalist.length === 0
-                            ? null
-                            : <Comments comments={datalist}
-                                onScroll={
-                                    e => 
-                                    ScrollHandler(
-                                        e, 
-                                        isStopLoad, 
-                                        false, 
-                                        ()=>getPart('comments', { 'type': 'post', 'postID': ID }, Library.getText('post.notLoadComments'), true, setStopLoad)
-                                    )
-                                } 
-                            />
-                        }
-                    </>
-                    : null
-            }
-        </div>
-        )
+            <SClippedFilesWrapper>
+                <ClippedFiles files={clippedFiles} />
+            </SClippedFilesWrapper>
+            
+            <LeaveCommentPlash id={ID} type="post" addComments={addComments} />
+            
+            <Comments
+                comments={datalist}
+                onScroll={
+                    e => 
+                    ScrollHandler(
+                        e, 
+                        isStopLoad, 
+                        false, 
+                        () => loadComments(ID, getPart)
+                    )
+                }
+            />
+        </SPostWrapper>
+    )
 }

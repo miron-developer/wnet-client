@@ -7,8 +7,8 @@ import { RandomKey } from "functions/content";
 import { ScrollHandler } from "functions/effects";
 import GalleryItem from 'common/gallery-item/gallery';
 
-import Switch  from 'profile-path/profile-switch/switch';
-import SearchLink from 'profile-path/profile-search-link/link';
+import Switch  from 'account/account-switch/switch';
+import SearchLink from 'account/account-search-link/link';
 import styled from "styled-components";
 
 const SGallery = styled.div`
@@ -26,29 +26,28 @@ const SGalleryList = styled.div`
     overflow: auto;
 `;
 
-const possibleTypes = [
-    Library.getText('common.routes.profile.friends.all'),
-    Library.getText('common.routes.photo'),
-    Library.getText('common.routes.video'),
-];
+const localLib = {
+    'all': Library.getText('common.routes.account.friends.all'),
+    'photo': Library.getText('common.routes.photo'),
+    'video': Library.getText('common.routes.video'),
+    'account': Library.getText('common.routes.account.account'),
+    'gallery': Library.getText('common.routes.account.gallery'),
+    'notLoad': Library.getText('account.gallery.notLoad'),
+    'search': Library.getText('common.routes.searches.search'),
+}
 
+const possibleTypes = [localLib.all, localLib.photo, localLib.video];
 const galleryTypes = ['all', 'photo', 'video'];
 
 const switchDatas = [{
-    to: "/"+Library.getText('common.routes.profile.profile')+
-        "/"+Library.getText('common.routes.profile.gallery')+
-        "/"+Library.getText('common.routes.profile.friends.all'),
-    textPath: 'common.routes.profile.friends.all',
+    to: "/" + localLib.account + "/" + localLib.gallery + "/" + localLib.all,
+    textPath: localLib.all,
 },{
-    to: "/"+Library.getText('common.routes.profile.profile')+
-        "/"+Library.getText('common.routes.profile.gallery')+
-        "/"+Library.getText('common.routes.photo'),
-    textPath: 'common.routes.photo',
+    to: "/" + localLib.account + "/" + localLib.gallery + "/" + localLib.photo,
+    textPath: localLib.photo,
 },{
-    to: "/"+Library.getText('common.routes.profile.profile')+
-        "/"+Library.getText('common.routes.profile.gallery')+
-        "/"+Library.getText('common.routes.video'),
-    textPath: 'common.routes.video',
+    to: "/" + localLib.account + "/" + localLib.gallery + "/" + localLib.video,
+    textPath: localLib.video,
 }];
 
 export default function Gallery() {
@@ -61,7 +60,7 @@ export default function Gallery() {
     
     useEffect(()=> {
         if (!isLoaded) {
-            getPart('gallery', {'type': 'my', 'galleryType': type}, Library.getText('profile-path.gallery.notLoad'), true);
+            getPart('gallery', {'type': 'my', 'galleryType': type}, localLib.notLoad, true);
             setLoaded(true);
         }
         if (prevType !== type) {
@@ -72,9 +71,7 @@ export default function Gallery() {
     }, [prevType, type, datalist, isLoaded, getPart, setDataList]);
 
     return !possibleTypes.includes(galleryType) 
-        ? <Redirect to={"/"+Library.getText('common.routes.profile.profile')+
-                        "/"+Library.getText('common.routes.profile.gallery')+
-                        "/"+Library.getText('common.routes.profile.friends.all')} /> 
+        ? <Redirect to={"/" + localLib.account + "/" + localLib.gallery + "/" + localLib.all} /> 
         : (
             <SGallery>
                 <Switch switchDatas={switchDatas} />
@@ -83,18 +80,19 @@ export default function Gallery() {
                     type === 'video'
                         ? <SearchLink 
                             text = {possibleTypes[2]}
-                            route={"/" + Library.getText('common.routes.searches.search') + "/" + Library.getText('common.routes.video')}
+                            route={"/" + localLib.search + "/" + localLib.video}
                         />
                         : null
                 }
 
-                <SGalleryList onScroll={
-                    e => 
-                    ScrollHandler(
-                        e, 
-                        isStopLoad, 
-                        false, 
-                        () => getPart('gallery', {'type': 'my', 'galleryType': type}, Library.getText('profile-path.gallery.notLoad'), true)
+                <SGalleryList 
+                    onScroll={
+                        e => 
+                        ScrollHandler(
+                            e, 
+                            isStopLoad, 
+                            false, 
+                            () => getPart('gallery', {'type': 'my', 'galleryType': type}, localLib.notLoad, true)
                         )
                     }
                 >

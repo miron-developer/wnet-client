@@ -7,9 +7,7 @@ const SDatetime = styled.div`
     color: var(--offHoverColor);
     background: var(--purpleColor);
     border-radius: 10px;
-    transition: var(--transitionApp);
 `;
-
 
 export default function Datetime({ datetime }) {
     return <SDatetime>{CalculateRelativeDatetime(datetime)}</SDatetime>

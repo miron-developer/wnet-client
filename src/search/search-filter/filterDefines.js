@@ -1,122 +1,179 @@
 import { Library } from "constants/language";
 
-const sort = Library.getText('search.filter.filterDefines.sort')
-const date = Library.getText('search.filter.filterDefines.date');
-const pop = Library.getText('search.filter.filterDefines.popularity');
-const age = Library.getText('search.filter.filterDefines.age');
-const subs = Library.getText('search.filter.filterDefines.subs');
-const all = Library.getText('search.filter.filterDefines.genderAll');
-const member = Library.getText('search.filter.filterDefines.member');
-const gender = Library.getText('profile.data.gender');
-const male = Library.getText('profile.change-profile.genderMale');
-const female = Library.getText('profile.change-profile.genderFemale');
-const online = Library.getText('common.avatar.statusTextOnline');
-const privateText = Library.getText('search.filter.filterDefines.private');
-const carma = Library.getText('search.filter.filterDefines.carma');
-const view = Library.getText('search.filter.filterDefines.view');
+const localLib = {
+    sort: Library.getText('search.filter.filterDefines.sort'),
+    date: Library.getText('search.filter.filterDefines.date'),
+    pop: Library.getText('search.filter.filterDefines.popularity'),
+    age: Library.getText('search.filter.filterDefines.age'),
+    subs: Library.getText('search.filter.filterDefines.subs'),
+    all: Library.getText('search.filter.filterDefines.genderAll'),
+    member: Library.getText('search.filter.filterDefines.member'),
+    gender: Library.getText('profile.data.gender'),
+    male: Library.getText('profile.change-profile.genderMale'),
+    female: Library.getText('profile.change-profile.genderFemale'),
+    online: Library.getText('common.avatar.statusTextOnline'),
+    private: Library.getText('search.filter.filterDefines.private'),
+    carma: Library.getText('search.filter.filterDefines.carma'),
+    view: Library.getText('search.filter.filterDefines.view'),
+}
 
 export const AllFilter = {
     'countFilters': [],
     'btnFilters': [{
-        'title': sort,
-        'short': 'sort',
-        'values': [
-            pop,
-            date,
+        'title': localLib.sort,
+        'fil_short': 'sort',
+        'values': [{
+                'title': localLib.pop,
+                'short': 'pop',
+            },
+            {
+                'title': localLib.date,
+                'short': 'date',
+            },
         ],
-        'defaultIndex': 1,
+        'checked': 1,
     }],
     'switchFilters': [],
 }
 
 export const PeopleFilter = {
     'countFilters': [{
-        'title': age,
+        'title': localLib.age,
         'short': 'age',
+        'values': [],
     }, {
-        'title': subs,
+        'title': localLib.subs,
         'short': 'subs',
+        'values': [],
     }],
     'btnFilters': [{
-        'title': sort,
-        'short': 'sort',
-        'values': [
-            pop,
-            subs,
-            date,
+        'title': localLib.sort,
+        'fil_short': 'sort',
+        'values': [{
+                'title': localLib.subs,
+                'short': 'subs',
+            },
+            {
+                'title': localLib.date,
+                'short': 'date',
+            },
+            // {
+            //     'title': localLib.pop,
+            //     'short': 'pop',
+            // },
         ],
-        'defaultIndex': 2,
+        'checked': 1,
     }, {
-        'title': gender,
-        'short': 'gender',
-        'values': [
-            male,
-            female,
-            all,
+        'title': localLib.gender,
+        'fil_short': 'gender',
+        'values': [{
+                'title': localLib.male,
+                'short': 'Male',
+            },
+            {
+                'title': localLib.female,
+                'short': 'Female',
+            },
+            {
+                'title': localLib.all,
+                'short': 'all',
+            },
         ],
-        'defaultIndex': 2,
+        'checked': 2,
     }],
     'switchFilters': [{
-        'title': online,
+        'title': localLib.online,
         'short': 'online',
+        'checked': false,
     }],
 }
 
 export const GroupFilter = {
     'countFilters': [{
-        'title': member,
-        'short': 'member',
+        'title': localLib.member,
+        'short': 'memb',
+        'values': [],
     }],
     'btnFilters': [{
-        'title': sort,
-        'short': 'sort',
-        'values': [
-            member,
-            date,
+        'title': localLib.sort,
+        'fil_short': 'sort',
+        'values': [{
+                'title': localLib.member,
+                'short': 'member',
+            },
+            {
+                'title': localLib.date,
+                'short': 'date',
+            },
         ],
-        'defaultIndex': 1,
+        'checked': 1,
     }],
     'switchFilters': [{
-        'title': privateText,
+        'title': localLib.private,
         'short': 'private',
+        'checked': false,
     }],
 }
 
 export const PostFilter = {
     'countFilters': [{
-        'title': carma,
+        'title': localLib.carma,
         'short': 'carma',
+        'values': [],
     }],
     'btnFilters': [{
-        'title': sort,
-        'short': 'sort',
-        'values': [
-            pop,
-            carma,
-            date,
+        'title': localLib.sort,
+        'fil_short': 'sort',
+        'values': [{
+                'title': localLib.pop,
+                'short': 'pop',
+            },
+            {
+                'title': localLib.date,
+                'short': 'date',
+            },
+            // {
+            //     'title': localLib.carma,
+            //     'short': 'carma',
+            // },
         ],
-        'defaultIndex': 2,
+        'checked': 1,
     }],
     'switchFilters': [],
 }
 
 export const VideoFilter = {
     'countFilters': [{
-        'title': carma,
-        'short': 'carma',
-    }, {
-        'title': view,
-        'short': 'view',
-    }],
+            'title': localLib.carma,
+            'short': 'carma',
+            'values': [],
+        },
+        // {
+        //     'title': localLib.view,
+        //     'short': 'view',
+        // }
+    ],
     'btnFilters': [{
-        'title': sort,
-        'short': 'sort',
-        'values': [
-            carma,
-            view,
-            date,
+        'title': localLib.sort,
+        'fil_short': 'sort',
+        'values': [{
+                'title': localLib.pop,
+                'short': 'pop',
+            },
+            {
+                'title': localLib.date,
+                'short': 'date',
+            },
+            // {
+            //     'title': localLib.carma,
+            //     'short': 'carma',
+            // },
+            // {
+            //     'title': localLib.view,
+            //     'short': 'view',
+            // },
         ],
-        'defaultIndex': 2,
+        'checked': 1,
     }],
     'switchFilters': [],
 }

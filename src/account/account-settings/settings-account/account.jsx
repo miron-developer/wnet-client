@@ -67,6 +67,21 @@ const SAccTypeHint = styled.div`
     color: red;
 `;
 
+const localLib = {
+    'wrongInputValidation': Library.getText('functions.form.wrongInputValidation'),
+    'canNotUploadAvatar': Library.getText('account.settings.account.canNotUploadAvatar'),
+    'avatar': Library.getText('account.settings.account.avatar'),
+    'clickToChange': Library.getText('account.gallery.upload.clickToChange'),
+    'pass': Library.getText('signs.sign-in.pass'),
+    'repPass': Library.getText('signs.sign-up.repPass'),
+    'account': Library.getText('common.routes.account.account'),
+    'private': Library.getText('account.settings.account.private'),
+    'public': Library.getText('account.settings.account.public'),
+    'privateHint': Library.getText('account.settings.account.privateHint'),
+    'publicHint': Library.getText('account.settings.account.publicHint'),
+    'change': Library.getText('account.settings.account.change'),
+}
+
 export default function AccountSettigns({ Wrapper, saveSettings }) {
     const currentAccountSettings = {
         'email': USER.email,
@@ -100,49 +115,49 @@ export default function AccountSettigns({ Wrapper, saveSettings }) {
 
     const onSubmit = async(e) => {
         e.preventDefault();
-        if (customValidation().length > 0) return Notify('fail', Library.getText('functions.form.wrongInputValidation'));
+        if (customValidation().length > 0) return Notify('fail', localLib.wrongInputValidation);
         const set = {
             'email': email.base.value,
             'password': pass.base.value,
             'avatar': avatarSrc,
             'isPrivate': isPrivate
         };
-        if (!(await UploadFile('photo', avatarFile, 'user'))) return Notify('fail', Library.getText('profile-path.settings.account.canNotUploadAvatar'));
+        if (!(await UploadFile('photo', avatarFile, 'user'))) return Notify('fail', localLib.canNotUploadAvatar);
         saveSettings(set, currentAccountSettings);
     }
 
     return (
         <Wrapper onSubmit={onSubmit} >
             <SUploadAvaWrapper>
-                <span>{Library.getText('profile-path.settings.account.avatar')}: ({Library.getText('profile-path.gallery.upload.clickToChange')})</span>
+                <span>{localLib.avatar}: ({localLib.clickToChange})</span>
                 <div className="ava-change" onClick={() => PreloadFile('image/*', preloadCB)}>
                     <img src={avatarSrc} alt="user avatar"/>
                 </div>
             </SUploadAvaWrapper>
 
             <Input type="text" base={email.base} required={false} labelText="Email" minLength="9" maxLength="30" placeholder="a@dot.com" />
-            <PasswordField id="settings-pass" labelText={Library.getText('signs.sign-in.pass')} placeholder="User1234" 
+            <PasswordField id="settings-pass" labelText={localLib.pass} placeholder="User1234" 
                 pass={pass}    passToggle={passToggle} required={false}
             /> 
-            <PasswordField id="settings-pass-rep" labelText={Library.getText('signs.sign-up.repPass')} placeholder="User1234" 
+            <PasswordField id="settings-pass-rep" labelText={localLib.repPass} placeholder="User1234" 
                 pass={passRep} passToggle={passRepToggle} required={false}
             />
 
             <SAccType>
-                <span >{Library.getText('common.routes.profile.settings.account')}: </span>
+                <span >{localLib.account}: </span>
 
                 <input id="settings-private"   type="radio" name="isPrivate" checked={isPrivate ? true : false} onChange={() => setPrivate(1)} />
-                <SAccTypeBtn htmlFor="settings-private">{Library.getText('profile-path.settings.account.private')}</SAccTypeBtn>
+                <SAccTypeBtn htmlFor="settings-private">{localLib.private}</SAccTypeBtn>
 
-                <input id="settings-unprivate" type="radio" name="isPrivate" checked={!isPrivate ? true : false} onChange={() => setPrivate(0)} />
-                <SAccTypeBtn htmlFor="settings-unprivate">{Library.getText('profile-path.settings.account.public')}</SAccTypeBtn>
+                <input id="settings-public" type="radio" name="isPrivate" checked={!isPrivate ? true : false} onChange={() => setPrivate(0)} />
+                <SAccTypeBtn htmlFor="settings-public">{localLib.public}</SAccTypeBtn>
             </SAccType>
             <SAccTypeHint>
-                <span>{Library.getText('profile-path.settings.account.privateHint')}</span>
-                <span>{Library.getText('profile-path.settings.account.publicHint')}</span>
+                <span>{localLib.privateHint}</span>
+                <span>{localLib.publicHint}</span>
             </SAccTypeHint>
 
-            <SubmitBtn value={Library.getText('profile-path.settings.account.change')} />
+            <SubmitBtn value={localLib.change} />
         </Wrapper>
     )
 }

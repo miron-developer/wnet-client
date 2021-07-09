@@ -8,15 +8,29 @@ import Actions from 'signs/sign-other-actions/actions';
 
 let afterStyles = []; // form handle all ::after notifications
 
+const localLib = {
+    'success': Library.getText('signs.reset.success'),
+    'sign': Library.getText('common.routes.signs.sign'),
+    'rst': Library.getText('common.routes.signs.rst'),
+    'fail': Library.getText('signs.reset.fail'),
+    'submit': Library.getText('signs.reset.submit'),
+    'remember': Library.getText('signs.sign-in.remember'),
+    'in': Library.getText('common.routes.signs.in'),
+    'singIn': Library.getText('signs.sign-in.sign-in'),
+    'createAcc': Library.getText('signs.sign-up.createAcc'),
+    'up': Library.getText('common.routes.signs.up'),
+    'singUp': Library.getText('signs.sign-up.sign-up'),
+}
+
 export default function Restore({history}) {
     const email = useInput();
     const fields = [ email ];
 
     const onSuccess = () => {
-        Notify('success', Library.getText('signs.reset.success'));
-        history.push('/'+Library.getText('common.routes.signs.sign')+'/'+Library.getText('common.routes.signs.rst'));
+        Notify('success', localLib.success);
+        history.push('/'+ localLib.sign + '/' + localLib.rst);
     }
-    const onFail = (err) => Notify('fail', Library.getText('signs.reset.fail') + ' ' + err);
+    const onFail = err => Notify('fail', localLib.fail + ':' + err);
 
     return (
         <>
@@ -27,17 +41,17 @@ export default function Restore({history}) {
                     minLength="9" maxLength="30" placeholder="a@dot.com"
                 />
                 
-                <SubmitBtn value={Library.getText('signs.reset.submit')} />
+                <SubmitBtn value={localLib.submit} />
             </form>
 
             <Actions actions={[{
-                'actionText': Library.getText('signs.sign-in.remember'),
-                'linkTo'    : '/'+Library.getText('common.routes.signs.sign')+'/'+Library.getText('common.routes.signs.in'),
-                'linkText'  : Library.getText('signs.sign-in.sign-in'),
+                'actionText': localLib.remember,
+                'linkTo'    : '/' + localLib.sign + '/' + localLib.in,
+                'linkText'  : localLib.singIn,
             },{
-                'actionText': Library.getText('signs.sign-up.createAcc'),
-                'linkTo'    : '/'+Library.getText('common.routes.signs.sign')+'/'+Library.getText('common.routes.signs.up'),
-                'linkText'  : Library.getText('signs.sign-up.sign-up'),
+                'actionText': localLib.createAcc,
+                'linkTo'    : '/' + localLib.sign + '/' + localLib.up,
+                'linkText'  : localLib.singUp,
             }]} />
         </>
     )

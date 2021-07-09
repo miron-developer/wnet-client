@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { withRouter } from "react-router";
+import { useHistory } from "react-router";
 
 import { Library } from "constants/language";
 import { useInput } from "functions/form";
@@ -31,55 +31,60 @@ const SUploadRes = styled.div`
     }
 `;
 
-const SNoteText = styled.div`
-    position: fixed;
-    right: 12vw;
-    top: 50%;
-    padding: .5rem;
-    color: var(--onHoverColor);
-    background: red;
-    border-radius: 5px;
-`;
-
-const customValidation = (title, mainPreloadSrc, posterPreloadSrc, whichPhoto, choosenGroups = []) => {
-    if (title === "") return Library.getText('profile-path.gallery.upload.titleRequired');
-    if (whichPhoto === "group" && choosenGroups.length === 0) return "no selected group";
-    if (mainPreloadSrc === "/img/default-avatar.png") return "choose photo to upload";
-    if (posterPreloadSrc === "/img/default-avatar.png") return "choose poster for video";
+const localLib = {
+    'titleRequired': Library.getText('account.gallery.upload.titleRequired'),
+    'notChoosenGroup': Library.getText('common.header.create-a.notChoosenGroup'),
+    'chooseVideo': Library.getText('common.header.create-a.video.chooseVideo'),
+    'choosePoster': Library.getText('common.header.create-a.video.choosePoster'),
+    'notSaveFile': Library.getText('common.clips.clips.notSaveFile'),
+    'clickToChange': Library.getText('account.gallery.upload.clickToChange'),
+    'nameTitle': Library.getText('common.event-item.event.title'),
+    'poster': Library.getText('account.gallery.upload.poster'),
+    'create': Library.getText('common.header.create-a.create'),
+    'created': Library.getText('common.header.create-a.created'),
+    'chooseGroups': Library.getText('common.header.create-a.chooseGroup'),
+    'videoFor': Library.getText('common.header.create-a.video.videoFor'),
+    'me': Library.getText('common.header.create-a.forMe'),
+    'group': Library.getText('common.header.create-a.forGroup'),
 }
 
-const getParams = async(title, mainFile, posterFile, whichVideo, choosenGroups = [], setText) => {
+const customValidation = (title, mainPreloadSrc, posterPreloadSrc, whichPhoto, choosenGroups = []) => {
+    if (title === "") return localLib.titleRequired;
+    if (whichPhoto === "group" && choosenGroups.length === 0) return localLib.notChoosenGroup;
+    if (mainPreloadSrc === "/img/default-avatar.png") return localLib.chooseVideo
+    if (posterPreloadSrc === "/img/default-avatar.png") return localLib.choosePoster;
+}
+
+const getParams = async(title, mainFile, posterFile, whichVideo, choosenGroups = []) => {
     const params = {
         'title': title,
         'which': whichVideo,
         'type': 'video',
     };
     const mainSrc = await UploadFile("video", mainFile, 'gallery');
-    if (!mainSrc) return setText(Library.getText('common.clips.clips.notSaveFile'));
+    if (!mainSrc) return Notify('fail', localLib.notSaveFile);
     else params['src'] = mainSrc.src;
 
     const posterSrc = await UploadFile("photo", posterFile, 'gallery');
-    if (!posterSrc) return setText(Library.getText('common.clips.clips.notSaveFile'));
+    if (!posterSrc) return Notify('fail', localLib.notSaveFile);
     params['preview'] = posterSrc.src;
 
     if (whichVideo === "group") params['choosenGroups'] = choosenGroups.map(group => group.id);
     return params;
 }
 
-const onSuccessCreate = () => {
-   Notify('success', 'Video created')
-}
+const onSuccessCreate = () => Notify('success', localLib.created);
 
-const CreateVideo = ({ Wrapper, history, onSubmit = ()=>{} }) => {
+export default function CreateVideo({ Wrapper, onSubmit = ()=>{} }) {
     const title = useInput('');
+    const history = useHistory();
     const [mainFile, setMainFile] = useState();
     const [posterFile, setPosterFile] = useState();
     const [mainPreloadSrc, setMainSrc] = useState('/video-ex.mp4');
     const [posterPreloadSrc, setPosterSrc] = useState('/img/default-avatar.png');
     const [whichVideo, setWhichVideo] = useState('my');
     const [choosenGroups, setChoosenGroups] = useState([]);
-    const [noteText, setText] = useState('');
-
+    
     const preloadMain = (file, src) => setMainFile(file) || setMainSrc(src);
     const preloadPoster = (file, src) => setPosterFile(file) || setPosterSrc(src);
 
@@ -90,42 +95,39 @@ const CreateVideo = ({ Wrapper, history, onSubmit = ()=>{} }) => {
         <Wrapper onSubmit={e => 
             onSubmit(
                 e, history, 'video', 
-                getParams(title.base.value, mainFile, posterFile,  whichVideo, choosenGroups, setText),
+                getParams(title.base.value, mainFile, posterFile,  whichVideo, choosenGroups),
                 customValidation(title.base.value, mainPreloadSrc, posterPreloadSrc, whichVideo, choosenGroups),
-                setText,
                 onSuccessCreate,
             )
         }>
-            { noteText.length === 0 ? null : <SNoteText>{noteText}</SNoteText> }
-
             <SUploadResWrapper>
-                <span>Video: ({Library.getText('profile-path.gallery.upload.clickToChange')})</span>
+                <span>Video: ({localLib.clickToChange})</span>
                 <SUploadRes onClick={() => PreloadFile('video/*', preloadMain)} >
                 <video src={mainPreloadSrc} controls></video>
                 </SUploadRes>
             </SUploadResWrapper>
 
             <SUploadResWrapper> 
-                <span>{Library.getText('profile-path.gallery.upload.poster')}: ({Library.getText('profile-path.gallery.upload.clickToChange')})</span>
+                <span>{localLib.poster}: ({localLib.clickToChange})</span>
                 <SUploadRes onClick={() => PreloadFile('image/*', preloadPoster)} >
                     <img src={posterPreloadSrc}  alt="poster"/>
                 </SUploadRes> 
             </SUploadResWrapper>
 
-            <Input type="text" base={title.base} labelText={Library.getText('common.event-item.event.title') + ":"} 
+            <Input type="text" base={title.base} labelText={localLib.nameTitle + ":"} 
                 minLength="9" maxLength="30" placeholder="My journay" 
             />
 
-            <TypeBtns title="video for" type={whichVideo}
+            <TypeBtns title={localLib.videoFor} type={whichVideo}
                 btns={[{
                     'id': 'my-video',
                     'btnType': 'my',
-                    'text': "Me",
+                    'text': localLib.me,
                     'onChange': () => setWhichVideo('my'),
                 }, {
                     'id': 'group-video',
                     'btnType': 'group',
-                    'text': "Group",
+                    'text': localLib.group,
                     'onChange': () => setWhichVideo('group'),
                 }]}
             />
@@ -133,15 +135,13 @@ const CreateVideo = ({ Wrapper, history, onSubmit = ()=>{} }) => {
             { 
                 whichVideo === 'group' 
                     ? <ChooseList type="groups" choosenList={choosenGroups} params={{'type': 'all'}}
-                        title="Choose groups, where you want to load the photo:"
+                        title={localLib.chooseGroups}
                         add={addChoosens} remove={removeChoosens} 
                     /> 
                     : null
             }
 
-            <SubmitBtn value={Library.getText('common.header.create-a.create') + "!"} />
+            <SubmitBtn value={localLib.create + "!"} />
         </Wrapper>
     )
 }
-
-export default withRouter(CreateVideo);

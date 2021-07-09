@@ -1,5 +1,8 @@
-import { ToFollow } from 'functions/user';
+import { useEffect, useState } from 'react';
+
+import { USER } from 'constants/constants';
 import { ReadableCount } from 'functions/content';
+import { CalculateSubsNumberType, CalculateSubsIcon, SubsClick } from 'profile/profile-actions-btns/btns';
 import Avatar from 'common/avatar/avatar';
 
 import styled from 'styled-components';
@@ -37,13 +40,35 @@ const SProfileSubsBtn = styled.div`
     color: var(--violetColor);
 `;
 
-const onClick = (e, id, isUser, isPrivate) => e.preventDefault() || ToFollow(id, isUser, isPrivate ? 0 : 2);
+const subsClick = (e, isUser, subsState, setSubsState=()=>{}) => {
+    e.preventDefault();
+    SubsClick(subsState.clickNumber, isUser, subsState, setSubsState, false)
+}
 
-export default function ResultProfile({id, type, avatar, status, fName, lName, title, aboutMe, description, isPrivate, followers, members, Link}) {
+export default function ResultProfile({
+    id, type, avatar, status, nickname, title, aboutMe, description, isPrivate, 
+    followers, members, InRlshState, OutRlshState, Link
+}) {
     const isUser = type === 'user' ? true : false;
-    const name = isUser ? lName + ' ' + fName : title;
+    const isMy =  id === USER.id;
+    const name = isUser ? nickname : title;
     const about = isUser ? aboutMe : description;
     const count = isUser ? followers : members;
+    const icons = ['user-plus', 'user-times', 'window-restore'];
+
+    const [subsState, setSubsState] = useState({});
+
+    useEffect(() => {
+        if (subsState.clickNumber !== CalculateSubsNumberType(isMy, isPrivate, subsState.InRlshState, subsState.OutRlshState)) {
+            setSubsState({
+                id,
+                'InRlshState': subsState.InRlshState ? subsState.InRlshState : InRlshState,
+                'OutRlshState': subsState.OutRlshState ? subsState.OutRlshState : OutRlshState,
+                'clickNumber': CalculateSubsNumberType(isMy, isPrivate, subsState.InRlshState, subsState.OutRlshState),
+                'subsIcon': CalculateSubsIcon(isMy, subsState.InRlshState, subsState.OutRlshState),
+            })
+        }
+    }, [isMy, isUser, subsState, id, isPrivate, InRlshState, OutRlshState])
 
     return (
         <Link to={`/${type}/${id}`}>
@@ -59,9 +84,12 @@ export default function ResultProfile({id, type, avatar, status, fName, lName, t
                 </SProfileAboutWrapper>
             </SProfileDataWrapper>
 
-            <SProfileSubsBtn onClick={e => onClick(e, id, isUser, isPrivate)} >
-                <i className='fa fa-user-plus' aria-hidden="true"></i>
-            </SProfileSubsBtn>
+            { isMy
+                ? null
+                : <SProfileSubsBtn onClick={e => subsClick(e, isUser, subsState, setSubsState)} >
+                    <i className={`fa fa-${icons[subsState.subsIcon]}`} aria-hidden="true"></i>
+                </SProfileSubsBtn>
+            }
         </Link>
     );
 }

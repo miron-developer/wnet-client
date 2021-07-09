@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { withRouter } from 'react-router';
+import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 
 import { USER } from 'constants/constants';
@@ -17,6 +17,13 @@ const SHeaderPopupsLink = styled(Link)`
     color: #000000;
 `;
 
+const localLib = {
+    'account': Library.getText('common.routes.account.account'),
+    'gallery': Library.getText('common.routes.account.gallery'),
+    'settings': Library.getText('common.routes.account.settings.settings'),
+    'logout': Library.getText('common.aside.logout'),
+}
+
 const UserItem = ({href, icon, actionText = ''}) => {
     const textChildrens = <span>{actionText}</span>
     return (
@@ -26,12 +33,12 @@ const UserItem = ({href, icon, actionText = ''}) => {
     )
 }
 
-const User = ({ history }) => {
+export default function User() {
     const [isOpened, setOpened] = useState(false);
+    const history = useHistory();
 
     return (
         <HeaderPopups isOpened={isOpened} setOpened={setOpened} >
-
             <HeaderPopupsIcons>
                 <img src={USER.avatar} alt="default-avatar"/>
             </HeaderPopupsIcons>
@@ -43,24 +50,21 @@ const User = ({ history }) => {
             <HeaderPopupsBody isOpened={isOpened} >
                 <UserItem 
                     icon="picture-o" 
-                    actionText={Library.getText('common.header.user-menu.userItems.gallery')}
-                    href={'/' + Library.getText('common.routes.profile.profile') + '/' + Library.getText('common.routes.profile.gallery')} 
+                    actionText={localLib.gallery}
+                    href={'/' + localLib.account + '/' + localLib.gallery} 
                 />
 
                 <UserItem 
                     icon="cogs"
-                    actionText={Library.getText('common.header.user-menu.userItems.settings')}
-                    href={'/' + Library.getText('common.routes.profile.profile') + '/' + Library.getText('common.routes.profile.settings.settings')} 
+                    actionText={localLib.settings}
+                    href={'/' + localLib.account + '/' + localLib.settings} 
                 />
 
                 <HeaderPopupsItem 
                     onClick={() => SignOut(history)} icon="sign-out" 
-                    textChildrens={<span>{Library.getText('common.header.user-menu.userItems.logout')}</span>} 
+                    textChildrens={<span>{localLib.logout}</span>} 
                 />
             </HeaderPopupsBody>
-            
         </HeaderPopups>
     )
 }
-
-export default withRouter(User);

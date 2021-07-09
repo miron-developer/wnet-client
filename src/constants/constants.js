@@ -20,8 +20,8 @@ export const NOTE_COMMENT_VIDEO = 23;
 export const USER = {
     id: -1,
     email: '',
-    avatar: '',
-    nickname: '',
+    avatar: '/img/default-avatar.png',
+    nickname: 'nickname',
     fName: '',
     lName: '',
     gender: '',

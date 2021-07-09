@@ -8,7 +8,7 @@ import Signs from 'signs/sign';
 import Profile from 'profile/profile';
 import Search from 'search/search';
 import Messenger from 'messenger/messenger';
-import ProfilePath from 'profile-path/profile';
+import Account from 'account/account';
 import Event from 'event/event';
 import Post from 'post/post';
 import Comment from 'comment/comment';
@@ -81,9 +81,9 @@ const ROUTES = [{
         component: Search,
     },
     {
-        href: "/"+Library.getText('common.routes.profile.profile')+"/",
+        href: "/"+Library.getText('common.routes.account.account')+"/",
         isExact: false,
-        component: ProfilePath,
+        component: Account,
     },
 ]
 

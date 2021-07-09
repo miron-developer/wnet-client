@@ -37,8 +37,8 @@ const PutSmile = (inputRef, msg, smile, updText, updPosition) => {
 
 export default function SendTextMsg({ Wrapper, send = ()=>{} }) {
     const inputRef = useRef(null);
-    const [cursorPosition, setPosition] = useState();
     const msgText = useInput('');
+    const [cursorPosition, setPosition] = useState();
 
     useEffect(() => inputRef.current.selectionEnd = cursorPosition, [cursorPosition]);
     

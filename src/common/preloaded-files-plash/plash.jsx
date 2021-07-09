@@ -1,3 +1,5 @@
+import { RandomKey } from "functions/content";
+
 import styled from "styled-components";
 
 const SFilesPlash = styled.div`
@@ -67,7 +69,7 @@ export default function PreloadedFilesPlash({ preloadedFiles, removeFile = ()=>{
         <SFilesPlash>
             {
                 preloadedFiles.map(
-                    file => <RenderUploadedFile key={Math.random()*Math.random()} {...file} removeFile={filename => removeFile(filename)} />
+                    file => <RenderUploadedFile key={RandomKey()} {...file} removeFile={filename => removeFile(filename)} />
                 )
             }
         </SFilesPlash>

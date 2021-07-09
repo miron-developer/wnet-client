@@ -2,9 +2,8 @@ import { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
 import { Library } from 'constants/language';
-import { USER, GROUP, VIDEO, POST } from 'constants/mocks';
-import { GetDataByCrieteries } from 'functions/api';
-import { Notify } from 'common/app-notification/notification';
+import { useFromTo } from 'functions/hooks';
+import { ScrollHandler } from 'functions/effects';
 import SearchInput from 'search/search-input/input';
 import SearchSwitch from 'search/search-switch/switch';
 import Filter from 'search/search-filter/filter';
@@ -18,23 +17,29 @@ const SSearch = styled.div`
 
 const SSearchResult = styled.div`
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    padding: 2rem;
+    height: 86vh;
+    overflow: auto;
 `;
 
 let prevFilter = {};
-const possibleSearches = [
-    Library.getText('common.routes.searches.all'), 
-    Library.getText('common.routes.searches.user'), 
-    Library.getText('common.routes.group'), 
-    Library.getText('common.routes.post'), 
-    Library.getText('common.routes.video'),
-];
 
+const localLib = {
+    'all': Library.getText('common.routes.searches.all'),
+    'user': Library.getText('common.routes.user'),
+    'group': Library.getText('common.routes.group'),
+    'post': Library.getText('common.routes.post'),
+    'video': Library.getText('common.routes.video'),
+    'notLoadRes': Library.getText('search.search.notLoadRes'),
+    'search': Library.getText('common.routes.searches.search'),
+}
+
+const possibleSearches = [localLib.all, localLib.user, localLib.group, localLib.post, localLib.video];
 const searchTypes = ['all', 'user', 'group', 'post', 'video'];
 
-const updPrevFilter = newF => prevFilter = Object.assign({}, newF);
+const updPrevFilter = newF => prevFilter = {...newF};
 
 const isNewFilter = filter => {
     const k1 = Object.keys(prevFilter);
@@ -52,53 +57,46 @@ const removeEmptyFields = (obj = {}) => {
     return obj
 }
 
-const search = async(searchObj, setData) => {
-    if (!searchObj || !setData) return;
-    const res = await GetDataByCrieteries('search', searchObj);
-
-    if (searchObj.type === 'post') setData([POST, POST, POST]);
-    else if (searchObj.type === 'user') setData([USER, USER, USER]);
-    else if (searchObj.type === 'group') setData([GROUP, GROUP, GROUP]);
-    else setData([VIDEO, VIDEO, VIDEO]);
-
-    if (res.err !== "ok") return Notify('fail', Library.getText('search.search.notLoadRes'));
-    setData(res.data);
-};
+const loadSearchRes = (getPart, isNeedClear = false) => getPart("search", prevFilter, localLib.notLoadRes, true, isNeedClear);
 
 export default function SearchAll() {
-    const [data, setData] = useState([]);
+    const {datalist, isStopLoad, getPart, setDataList, zeroState} = useFromTo()
     const [searchText, setSearchText] = useState('');
-    const [filterParams, setFilterParams] = useState({});
     const [isFilterClosed, setFilterCloseState] = useState(true);
+    const [filterParams, setFilterParams] = useState({});
 
     const searchType = decodeURI(window.location.pathname).split('/')[2];
+    const indexOfPossibles = possibleSearches.indexOf(searchType);
+    const type = searchTypes[indexOfPossibles];
     
-    useEffect(()=> {
-        const indexOfPossibles = possibleSearches.indexOf(searchType);
+    useEffect(()=>{
         const searchObj = {
             ...removeEmptyFields(filterParams),
-            'type': searchTypes[indexOfPossibles],
+            'type': type,
             'q'   : searchText,
         }
 
-        if (!possibleSearches.includes(searchType) || !isNewFilter(searchObj)) return;
-        if (prevFilter.type !== searchObj.type) return setFilterParams({}) || updPrevFilter(searchObj);
-        if (isFilterClosed) setFilterParams(Object.assign({}, filterParams));
-       
-        search(searchObj, setData);
-        updPrevFilter(searchObj);
-    }, [isFilterClosed, searchText, filterParams, searchType]);
+        if (!isNewFilter(searchObj)) return;
+        if (prevFilter.type !== searchObj.type) return setDataList([]) || setFilterParams({}) || zeroState() || updPrevFilter(searchObj);
+        if (Object.values(filterParams).length === 0 && searchText === "") return;
+        if (!isFilterClosed) return;
 
-    return !possibleSearches.includes(searchType) 
-            ? <Redirect to={"/"+Library.getText('common.routes.searches.search')+"/"+Library.getText('common.routes.searches.all')} /> 
-            : (
-                <SSearch>
-                    <SearchInput isFilterClosed={isFilterClosed} setFilterCloseState={setFilterCloseState} searchType={searchType} setSearchText={setSearchText}/>
-                    <Filter isFilterClosed={isFilterClosed} filterIndex={possibleSearches.indexOf(searchType)} filterParams={filterParams} />
-                    <SearchSwitch />
-                    <SSearchResult>
-                        <GResult datas={data} />
-                    </SSearchResult>
-                </SSearch>
-            )
+        updPrevFilter(searchObj);
+        zeroState();
+        loadSearchRes(getPart, true);
+    }, [indexOfPossibles, type, isFilterClosed, searchText, filterParams, zeroState, getPart, setDataList]);
+
+    if (indexOfPossibles === -1) return <Redirect to={"/"+localLib.search+"/"+localLib.user}/>;
+    return (
+        <SSearch>
+            <SearchInput isFilterClosed={isFilterClosed} setFilterCloseState={setFilterCloseState} searchType={searchType} setSearchText={setSearchText}/>
+            <Filter isFilterClosed={isFilterClosed} filterIndex={indexOfPossibles} filterParams={filterParams} />
+            <SearchSwitch />
+            <SSearchResult
+                onScroll={e => ScrollHandler(e, isStopLoad, false, () => loadSearchRes(getPart))}
+            >
+                <GResult datas={datalist} />
+            </SSearchResult>
+        </SSearch>
+    )
 }

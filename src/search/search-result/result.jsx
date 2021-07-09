@@ -8,12 +8,13 @@ import ResultVideo from 'search/search-result/result-video/video';
 import styled from 'styled-components';
 
 export const SSearchResultItem = styled(Link)`
-    width: ${props => props.width ? props.width : '100%'};
+    width: 100%;
     padding: 1rem;
     margin: 1rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-direction: ${props => props.isVideo ? 'column' : 'row'};
     text-decoration: none;
     background: var(--offHoverBG);
     box-shadow: var(--boxShadow);
@@ -26,7 +27,6 @@ export const SSearchResultItem = styled(Link)`
     }
 
     & .result-item-title {
-        margin: 0;
         color: var(--offHoverColor);
         transition: var(--transitionApp);
     }

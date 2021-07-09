@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { withRouter } from 'react-router';
+import { useHistory } from 'react-router';
 
 import { Library } from 'constants/language';
 import { USER } from 'constants/constants';
-import { CheckIsExceptionPath } from 'functions/user';
+// import { CheckIsExceptionPath } from 'functions/user';
 import { IS_SIGN } from 'functions/content';
 import Aside from 'common/aside/aside';
 import Header from 'common/header/header';
@@ -29,23 +29,23 @@ const SApp = styled.div`
 	}
 `;
 
-const App = ({history}) => {
+const App = () => {
 	const isSign = IS_SIGN();
+	const history = useHistory();
 
 	useEffect(()=> {
 		if (USER.status === "online") {
-			if (isSign) history.push("/");
-		} else if (!CheckIsExceptionPath()) {
-			history.push('/'+Library.getText('common.routes.signs.sign')+'/'+Library.getText('common.routes.signs.in'));
+			return isSign ? history.push("/") : null;
 		}
+		// if (!CheckIsExceptionPath()) {
+			history.push('/'+Library.getText('common.routes.signs.sign')+'/'+Library.getText('common.routes.signs.in'));
+		// }
 	}, [history, isSign]);
 
 	return (
 		<SApp isSign={isSign}>
 			{
-				isSign 
-					? null 
-					: <Aside />
+				isSign ? null : <Aside />
 			}
 			<Header isSign={isSign} />
 			<Main 	isSign={isSign} />
@@ -54,4 +54,4 @@ const App = ({history}) => {
 	)
 }
 
-export default withRouter(App);
+export default App;

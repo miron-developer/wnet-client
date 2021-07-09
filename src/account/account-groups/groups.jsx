@@ -5,10 +5,10 @@ import { Library } from "constants/language";
 import { useFromTo } from "functions/hooks";
 import { RandomKey } from "functions/content";
 import { ScrollHandler } from "functions/effects";
-import ProfileItem from 'common/profile-path-item/profile';
+import ProfileItem from 'common/account-item/item';
 
-import GroupSwitch  from 'profile-path/profile-switch/switch';
-import SearchLink from 'profile-path/profile-search-link/link';
+import GroupSwitch  from 'account/account-switch/switch';
+import SearchLink from 'account/account-search-link/link';
 import styled from "styled-components";
 
 const SGroups = styled.div`
@@ -23,23 +23,25 @@ const SGroupsList = styled.div`
     overflow: auto;
 `;
 
-const possibleTypes = [
-    Library.getText('common.routes.profile.friends.all'),
-    Library.getText('common.routes.profile.friends.requests'),
-];
+const localLib = {
+    'all': Library.getText('common.routes.account.friends.all'),
+    'requests': Library.getText('common.routes.account.friends.requests'),
+    'account': Library.getText('common.routes.account.account'),
+    'groups': Library.getText('common.routes.account.groups'),
+    'notLoad': Library.getText('account.groups.notLoad'),
+    'search': Library.getText('common.routes.searches.search'),
+    'group': Library.getText('common.routes.group'),
+}
 
+const possibleTypes = [localLib.all, localLib.requests];
 const groupsTypes = ['all', 'requests'];
 
 const switchDatas = [{
-    to: "/"+Library.getText('common.routes.profile.profile')+
-        "/"+Library.getText('common.routes.profile.groups')+
-        "/"+Library.getText('common.routes.profile.friends.all'),
-    textPath: 'common.routes.profile.friends.all',
+    to: "/" + localLib.account + "/" + localLib.groups + "/" + localLib.all,
+    textPath: localLib.all,
 },{
-    to: "/"+Library.getText('common.routes.profile.profile')+
-        "/"+Library.getText('common.routes.profile.groups')+
-        "/"+Library.getText('common.routes.profile.friends.requests'),
-    textPath: 'common.routes.profile.friends.requests',
+    to: "/" + localLib.account + "/" + localLib.groups + "/" + localLib.requests,
+    textPath: localLib.requests,
 }];
 
 export default function Groups() {
@@ -52,12 +54,7 @@ export default function Groups() {
 
     useEffect(()=> {
         if (!isLoaded) {
-            getPart(
-                'groups', 
-                {'type': type}, 
-                Library.getText('profile-path.groups.notLoad'),
-                true,
-            )
+            getPart('groups', {'type': type}, localLib.notLoad, true);
             setLoaded(true);
         }
         if (prevType !== type) {
@@ -68,15 +65,13 @@ export default function Groups() {
     }, [prevType, datalist, type, isLoaded, getPart, setDataList]);
 
     return !possibleTypes.includes(groupType) 
-        ? <Redirect to={"/"+Library.getText('common.routes.profile.profile')+
-                        "/"+Library.getText('common.routes.profile.groups')+
-                        "/"+Library.getText('common.routes.profile.friends.all')} /> 
+        ? <Redirect to={"/" + localLib.account + "/" + localLib.groups + "/" + localLib.all} /> 
         : (
             <SGroups>
                 <GroupSwitch switchDatas={switchDatas} />
                 <SearchLink 
-                    text = {Library.getText('common.routes.group')}
-                    route={"/" + Library.getText('common.routes.searches.search') + "/" + Library.getText('common.routes.group')}
+                    text={localLib.group}
+                    route={"/" + localLib.search + "/" + localLib.group}
                 />
 
 
@@ -87,12 +82,7 @@ export default function Groups() {
                             e, 
                             isStopLoad, 
                             false, 
-                            () => getPart(
-                                'groups', 
-                                {'type': type}, 
-                                Library.getText('profile-path.groups.notLoad'),
-                                true,
-                            )
+                            () => getPart('groups', {'type': type}, localLib.notLoad, true)
                         )
                     }
                 >

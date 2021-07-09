@@ -38,7 +38,5 @@ export default function VideoPlayBack({ src, preview }) {
     const ref = useRef(null);
     useVideoPlayBack(ref, src);
 
-    return (
-        <video ref={ref} src={preview} ></video>
-    )
+    return <video ref={ref} src={preview} ></video>
 }

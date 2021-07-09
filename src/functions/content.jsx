@@ -1,11 +1,32 @@
 import { useLocation } from 'react-router';
 
 import { Library } from 'constants/language';
+import { HOST_URL } from 'constants/constants';
 import Event from 'common/event-item/event';
 import Post from 'common/post-item/post';
 
+const localLib = {
+    'sign': Library.getText('common.routes.signs.sign'),
+    'notPublications': Library.getText('functions.content.notPublications'),
+    's': Library.getText('functions.content.calculateDateTimes.s'),
+    'in': Library.getText('functions.content.calculateDateTimes.in'),
+    'ago': Library.getText('functions.content.calculateDateTimes.ago'),
+    'second': Library.getText('functions.content.calculateDateTimes.second'),
+    'minute': Library.getText('functions.content.calculateDateTimes.minute'),
+    'hour': Library.getText('functions.content.calculateDateTimes.hour'),
+    'day': Library.getText('functions.content.calculateDateTimes.day'),
+    'week': Library.getText('functions.content.calculateDateTimes.week'),
+    'month': Library.getText('functions.content.calculateDateTimes.month'),
+    'year': Library.getText('functions.content.calculateDateTimes.year'),
+    'k': Library.getText('functions.content.readableCounts.k'),
+    'm': Library.getText('functions.content.readableCounts.m'),
+    'b': Library.getText('functions.content.readableCounts.b'),
+    't': Library.getText('functions.content.readableCounts.t'),
+}
+
 export const GET_CUR_PATHNAME = () => decodeURI(useLocation().pathname);
-export const IS_SIGN = () =>  GET_CUR_PATHNAME().split('/').includes(Library.getText('common.routes.signs.sign'));
+export const IS_SIGN = () =>  GET_CUR_PATHNAME().split('/').includes(localLib.sign);
+export const GET_FILE_SRC = (src = '') => src.includes('/assets') ? HOST_URL + src : src;
 
 /**
  * 
@@ -24,7 +45,7 @@ export const SortArrOfObjByDatetime = arr => {
 // generate many post&events
 export const GeneratePublications = (publications) => {
     if (!(publications instanceof Array)) return [];
-    if (publications.length === 0) return <div className="publication-nf">{Library.getText('functions.content.notPublications')}</div>;
+    if (publications.length === 0) return <div className="publication-nf">{localLib.notPublications}</div>;
     
     const res = [];
     publications.forEach(
@@ -54,65 +75,50 @@ export const CalculateRelativeDatetime = (datetime = Date.now().toString()) => {
 
     const isPast = (now - given) > 0 ? true : false ;
     let diff = Math.abs(now - given) / 1000;
-    let diffType = Library.getText('functions.content.calculateDateTimes.second');
+    let diffType = localLib.second;
 
     const returnDate = () => {
         diff = Math.floor(diff);
-        if (diff > 1) diffType += Library.getText('functions.content.calculateDateTimes.s');
+        if (diff > 1) diffType += localLib.s;
 
-        if (!isPast) return [
-            Library.getText('functions.content.calculateDateTimes.in'), 
-            IsTwoDigit(diff), 
-            diffType
-        ].join(' ');
+        if (!isPast) return [localLib.in, IsTwoDigit(diff), diffType].join(' ');
 
         const isToday = Math.abs(now - given) < 86400000;
-        return [
-            isToday ? 'today' : '',
-            IsTwoDigit(diff), 
-            diffType, 
-            Library.getText('functions.content.calculateDateTimes.ago')
-        ].join(' ');
+        return [isToday ? 'today' : '', IsTwoDigit(diff), diffType, localLib.ago].join(' ');
     }
 
     // calculate difference
     if (diff > 60) {
         diff /= 60;
-        diffType = Library.getText('functions.content.calculateDateTimes.minute');
+        diffType = localLib.minute;
     } else return returnDate();
 
     if (diff > 60) {
         diff /= 60;
-        diffType = Library.getText('functions.content.calculateDateTimes.hour');
+        diffType = localLib.hour;
     } else return returnDate();
 
     if (diff > 24) {
         diff /= 24;
-        diffType = Library.getText('functions.content.calculateDateTimes.day');
+        diffType = localLib.day;
     } else return returnDate();
 
     if (diff > 7 && diff < 30) {
         diff /= 7;
-        diffType = Library.getText('functions.content.calculateDateTimes.week');
+        diffType = localLib.week;
     } else if (diff > 30 && diff < 365) {
         diff /= 30;
-        diffType = Library.getText('functions.content.calculateDateTimes.month');
+        diffType = localLib.month;
     } else if (diff > 365) {
         diff /= 365;
-        diffType = Library.getText('functions.content.calculateDateTimes.year');
+        diffType = localLib.year;
     }
     return returnDate();
 }
 
 // from 1000000 to 100k for ex
 export const ReadableCount = (count = 0) => {
-    const letters = [
-        '', 
-        Library.getText('functions.content.readableCounts.k'),
-        Library.getText('functions.content.readableCounts.m'),
-        Library.getText('functions.content.readableCounts.b'),
-        Library.getText('functions.content.readableCounts.t')
-    ];
+    const letters = ['', localLib.k, localLib.m, localLib.b, localLib.t];
     let index = 0;
     while(count >= 1000) {
         count /= 1000;

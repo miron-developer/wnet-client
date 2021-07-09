@@ -1,6 +1,5 @@
 import { NavLink } from 'react-router-dom';
 
-import { Library } from 'constants/language';
 import { RandomKey } from 'functions/content';
 
 import styled from 'styled-components';
@@ -28,7 +27,7 @@ const SSwitchBtn = styled(NavLink)`
 const OneOption = ({to, textPath}) => {
     return (
         <SSwitchBtn activeClassName="active" to={to}>
-            <div>{Library.getText(textPath)}</div>
+            <div>{textPath}</div>
         </SSwitchBtn>
     )
 }

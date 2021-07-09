@@ -1,4 +1,5 @@
 import { RandomKey } from "functions/content";
+import { GET_FILE_SRC } from "functions/content";
 import { PopupOpen } from "common/popup/popup";
 
 import styled from "styled-components";
@@ -34,12 +35,15 @@ const SClippedFileSrc = styled.div`
     }
 `;
 
+
+
 const RenderClippedFile = ({type, filename, src, size, onClick = ()=>{}}) => {
     let resElem = <img src={'/img/clip.png'} alt="file uploaded" />
+    src = GET_FILE_SRC(src);
     if (type === 'video') resElem = <video src={src} controls />
     else if (type === 'image') resElem = <img src={src} alt="uploaded img" />
-    else if (type === 'audio') resElem = <audio src='/audio/ex.mp3' controls />
-    
+    else if (type === 'audio') resElem = <audio src={src} controls />
+
     return (
         <SClippedFileWrapper type={type} size={size} onClick={onClick} >
             <SClippedFileSrc type={type}>{resElem}</SClippedFileSrc>
@@ -53,7 +57,7 @@ export default function ClippedFiles({ files = [] }) {
         <SFilesPlash>
             {
                 files.map(
-                    file => <RenderClippedFile key={RandomKey()} {...file} onClick={() => PopupOpen(RenderClippedFile, {...file, 'size': '100%'})} />
+                    file => <RenderClippedFile key={RandomKey()} {...file} onClick={e => e.preventDefault() || PopupOpen(RenderClippedFile, {...file, 'size': '100%'})} />
                 )
             }
         </SFilesPlash>

@@ -66,6 +66,25 @@ const SChangeSubmit = styled.input`
 
 let afterStyles = [];
 
+const localLib = {
+    'somethingError': Library.getText('profile.change-profile.somethingError'),
+    'dataChanged': Library.getText('profile.change-profile.dataChanged'),
+    'changeData': Library.getText('profile.change-profile.changeData'),
+    'changeWhatYouWant': Library.getText('account.settings.settings.changeWhatYouWant'),
+    'genderDefault': Library.getText('profile.change-profile.genderDefault'),
+    'genderMale': Library.getText('profile.change-profile.genderMale'),
+    'genderFemale': Library.getText('profile.change-profile.genderFemale'),
+    'nick': Library.getText('profile.data.nick'),
+    'lName': Library.getText('profile.data.lName'),
+    'fName': Library.getText('profile.data.fName'),
+    'gender': Library.getText('profile.data.gender'),
+    'dob': Library.getText('profile.data.dob'),
+    'title': Library.getText('profile.data.title'),
+    'aboutMe': Library.getText('profile.data.aboutMe'),
+    'description': Library.getText('profile.data.description'),
+    'change': Library.getText('profile.change-profile.change'),
+}
+
 export default function ChangeProfile({id, nickname, lName, fName, dob, gender, aboutMe, title, cdate, description, isUser}) {
     // user's fields
     const [newGender, setGender] = useState(gender);
@@ -84,17 +103,17 @@ export default function ChangeProfile({id, nickname, lName, fName, dob, gender, 
 
     const fields = [newFName, newLName, newDob, newNick, newAboutMe, newTitle, newCDate, newDescription];
 
-    const onFail = text => Notify('fail', Library.getText('profile.change-profile.somethingError') + text); 
+    const onFail = text => Notify('fail', localLib.somethingError + text); 
     const onSuccess = async() => {
-        Notify('success', Library.getText('profile.change-profile.dataChanged'));
+        Notify('success', localLib.dataChanged);
         if (isUser) await UserOnline(id);
         ClosePopup();
     }
 
     return (
         <SChangeProfile>
-            <h2>{Library.getText('profile.change-profile.changeData')}</h2>
-            <h3>{Library.getText('profile-path.settings.settings.changeWhatYouWant')}</h3>
+            <h2>{localLib.changeData}</h2>
+            <h3>{localLib.changeWhatYouWant}</h3>
 
             <form action={`/e/${userOrGroup}`} onSubmit={ e => {
                 afterStyles = SubmitFormData(e, afterStyles, fields, undefined, onSuccess, onFail);
@@ -103,41 +122,41 @@ export default function ChangeProfile({id, nickname, lName, fName, dob, gender, 
                 {
                     isUser
                     ? <>
-                        <Input index="1" id="change-name-first" type="text" name="firstName" base={newFName.base} labelText="First name:"
+                        <Input index="1" id="change-name-first" type="text" name="firstName" base={newFName.base} labelText={localLib.fName + ":"}
                             minLength="3" maxLength="20" placeholder="type first name"
                         />
-                        <Input index="2" id="change-name-last" type="text" name="lastName" base={newLName.base} labelText="Last name:"
+                        <Input index="2" id="change-name-last" type="text" name="lastName" base={newLName.base} labelText={localLib.lName + ":"}
                             minLength="3" maxLength="20" placeholder="type last name"
                         />
-                        <Input index="3" id="change-dob" type="date" name="dob" base={newDob.base} labelText="Date of birth:"
+                        <Input index="3" id="change-dob" type="date" name="dob" base={newDob.base} labelText={localLib.dob + ":"}
                             min={`${MIN_ACCESS_YEAR}-01-01`}
                         />
-                        <Input index="4" id="change-nickname" type="text" name="nickname" base={newNick.base} labelText="Nickname:"
+                        <Input index="4" id="change-nickname" type="text" name="nickname" base={newNick.base} labelText={localLib.nick + ":"}
                             minLength="3" maxLength="20" placeholder="type nickname"
                         />
 
                         <SChangeGender>
-                            <Label labelText="Gender:"></Label>
+                            <Label labelText={localLib.gender + ":"}></Label>
                             <SGenderWrapper>
                                 <label className="change-gender-label">
-                                    {Library.getText('profile.change-profile.genderDefault')}:
+                                    {localLib.genderDefault}:
                                     <input type="radio" name="gender" onChange={()=>setGender("Default")} checked={newGender === "Default"} value="Default" />
                                 </label>
 
                                 <label className="change-gender-label">
-                                    {Library.getText('profile.change-profile.genderMale')}:
+                                    {localLib.genderMale}:
                                     <input type="radio" name="gender" onChange={()=>setGender("Male")} checked={newGender === "Male"} value="Male" />
                                 </label>
                                 
                                 <label className="change-gender-label">
-                                    {Library.getText('profile.change-profile.genderFemale')}:
+                                    {localLib.genderFemale}:
                                     <input type="radio" name="gender" onChange={()=>setGender("Female")} checked={newGender === "Female"} value="Female" />
                                 </label>
                             </SGenderWrapper>
                         </SChangeGender>
 
                         <SChangeWithTextarea className="form-field-5">
-                            <Label labelText="About me:"></Label>
+                            <Label labelText={localLib.aboutMe + ":"}></Label>
                             <textarea className="form-input" cols="30" rows="10"
                                 maxLength="400" minLength="10" name="aboutMe" {...newAboutMe.base}
                             ></textarea>
@@ -146,11 +165,11 @@ export default function ChangeProfile({id, nickname, lName, fName, dob, gender, 
                     </>
                     
                     : <>
-                        <Input index="5" id="change-title" type="text" name="title" base={newTitle.base} labelText="Title:"
+                        <Input index="5" id="change-title" type="text" name="title" base={newTitle.base} labelText={localLib.title + ":"}
                             minLength="3" maxLength="20" placeholder="type title"
                         />
                         <SChangeWithTextarea className="form-field-8">
-                            <Label labelText="Description:"></Label>
+                            <Label labelText={localLib.description + ":"}></Label>
                             <textarea className="form-input" cols="30" rows="10"
                                 maxLength="400" minLength="10" name="description" {...newDescription.base}
                             ></textarea>
@@ -158,7 +177,7 @@ export default function ChangeProfile({id, nickname, lName, fName, dob, gender, 
                         </SChangeWithTextarea>
                     </>
                 }
-                <SChangeSubmit type="submit" value="Change!"/>
+                <SChangeSubmit type="submit" value={localLib.change} />
             </form>
         </SChangeProfile>
     )

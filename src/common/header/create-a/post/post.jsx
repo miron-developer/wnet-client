@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { withRouter } from "react-router";
+import { useHistory } from "react-router";
 
 import { Library } from "constants/language";
 import { useInput } from "functions/form";
@@ -25,20 +25,33 @@ const SClippedFiles = styled.div`
     }
 `;
 
-const SNoteText = styled.div`
-    position: fixed;
-    right: 12vw;
-    top: 50%;
-    padding: .5rem;
-    color: var(--onHoverColor);
-    background: red;
-    border-radius: 5px;
-`;
+const localLib = {
+    'fillTitle': Library.getText('common.header.create-a.fillTitle'),
+    'fillDescription': Library.getText('common.header.create-a.fillDescription'),
+    'notChoosenGroup': Library.getText('common.header.create-a.notChoosenGroup'),
+    'post': Library.getText('common.header.create-a.createItems.post'),
+    'nameTitle': Library.getText('common.event-item.event.title'),
+    'create': Library.getText('common.header.create-a.create'),
+    'created': Library.getText('common.header.create-a.created'),
+    'postFor': Library.getText('common.header.create-a.post.postFor'),
+    'public': Library.getText('account.settings.account.public'),
+    'private': Library.getText('account.settings.account.private'),
+    'almostPrivate': Library.getText('common.header.create-a.post.almostPrivate'),
+    'publicHint': Library.getText('common.header.create-a.post.publicHint'),
+    'privateHint': Library.getText('common.header.create-a.post.privateHint'),
+    'almostPrivateHint': Library.getText('common.header.create-a.post.almostPrivateHint'),
+    'chooseGroups': Library.getText('common.header.create-a.chooseGroup'),
+    'chooseFollowers': Library.getText('common.header.create-a.chooseFollowers'),
+    'description': Library.getText('profile.data.description'),
+    'clipFile': Library.getText('common.header.create-a.post.clipFile'),
+    'me': Library.getText('common.header.create-a.forMe'),
+    'group': Library.getText('common.header.create-a.forGroup'),
+}
 
 const customValidation = (title, body, whichPost, choosenGroups = []) => {
-    if (title.length <= 0) return Library.getText('common.header.create-a.event.fillTitle');
-    if (body.length <= 0) return Library.getText('common.header.create-a.event.fillDescription');
-    if (whichPost === "group" && choosenGroups.length === 0) return "no selected group/s"
+    if (title.length <= 0) return localLib.fillTitle;
+    if (body.length <= 0) return localLib.fillDescription;
+    if (whichPost === "group" && choosenGroups.length === 0) return localLib.notChoosenGroup;
 }
 
 const getParams = async(postType, title, body, whichPost, choosenFollowers = [], choosenGroups = []) => {
@@ -57,21 +70,21 @@ const getParams = async(postType, title, body, whichPost, choosenFollowers = [],
 const onSuccessCreate = (ids = [], preloadedFiles = []) => {
     ids.forEach(async(id) => {
         await Promise.all(preloadedFiles.map(file => UploadFile(file.type, file.file, 'post', id)));
-        Notify('success', 'Post created')
+        Notify('success', localLib.created)
     })
     
 }
 
-const CreatePost = ({ Wrapper, history, onSubmit = ()=>{} }) => {
+export default function CreatePost({ Wrapper, onSubmit = ()=>{} }) {
     const title = useInput('');
     const body = useInput('');
+    const history = useHistory();
     const [postType, setPostType] = useState('public');
     const [whichPost, setWhichPost] = useState('my');
     const [preloadedFiles, setPreloadedFiles] = useState([]);
     const [choosenFollowers, setChoosenFollowers] = useState([]);
     const [choosenGroups, setChoosenGroups] = useState([]);
-    const [noteText, setText] = useState('');
-
+    
     const removeFile = filename => setPreloadedFiles(preloadedFiles.filter(file => file.filename !== filename));
     const addChoosens = (type, id) => {
         if (type === "groups") 
@@ -99,31 +112,28 @@ const CreatePost = ({ Wrapper, history, onSubmit = ()=>{} }) => {
                 e, history, 'post', 
                 getParams(postType, title.base.value, body.base.value, whichPost, choosenFollowers, choosenGroups),
                 customValidation(title.base.value, body.base.value, whichPost, choosenGroups),
-                setText,
                 (id) => onSuccessCreate(id, preloadedFiles),
             )
         }>
-            { noteText.length === 0 ? null : <SNoteText>{noteText}</SNoteText> }
-
-            <Input type="text" base={title.base} labelText={Library.getText('common.event-item.event.title') + ":"} 
+            <Input type="text" base={title.base} labelText={localLib.nameTitle + ":"} 
                 minLength="9" maxLength="30" placeholder="My journay" 
             />
            
-            <TypeBtns title={Library.getText('common.header.create-a.createItems.post')} type={postType}
+            <TypeBtns title={localLib.post} type={postType}
                 btns={[{
                     'id': 'create-post-public',
                     'btnType': 'public',
-                    'text': Library.getText('profile-path.settings.account.public'),
+                    'text': localLib.public,
                     'onChange': () => setPostType('public'),
                 }, {
                     'id': 'create-post-private',
                     'btnType': 'private',
-                    'text': Library.getText('profile-path.settings.account.private'),
+                    'text': localLib.private,
                     'onChange': () => setPostType('private'),
                 }, {
                     'id': 'create-post-almostPrivate',
                     'btnType': 'almost_private',
-                    'text': Library.getText('common.header.create-a.post.almostPrivate'),
+                    'text': localLib.almostPrivate,
                     'onChange': () => setPostType('almost_private'),
                 }]}
             />
@@ -131,27 +141,23 @@ const CreatePost = ({ Wrapper, history, onSubmit = ()=>{} }) => {
             { 
                 postType === 'almost_private' 
                     ? <ChooseList type="users" choosenList={choosenFollowers} add={id => addChoosens("followers", id)} remove={id => removeChoosens("followers", id)} 
-                        title="Choose followers, that you want to grant access:" params={{'type':'followers', 'flwType': 'all'}}
+                        title={localLib.chooseFollowers} params={{'type':'followers', 'flwType': 'all'}}
                     /> 
                     : null
             }
 
-            <TypeBtnsHints hints={[
-                Library.getText('common.header.create-a.post.publicHint'),
-                Library.getText('common.header.create-a.post.privateHint'),
-                Library.getText('common.header.create-a.post.almostPrivateHint'),
-            ]} />
+            <TypeBtnsHints hints={[localLib.publicHint, localLib.privateHint, localLib.almostPrivateHint]} />
 
-            <TypeBtns title="post for" type={whichPost}
+            <TypeBtns title={localLib.postFor} type={whichPost}
                 btns={[{
                     'id': 'my-post',
                     'btnType': 'my',
-                    'text': "Me",
+                    'text': localLib.me,
                     'onChange': () => setWhichPost('my'),
                 }, {
                     'id': 'group-post',
                     'btnType': 'group',
-                    'text': "Group",
+                    'text': localLib.group,
                     'onChange': () => setWhichPost('group'),
                 }]}
             />
@@ -159,27 +165,25 @@ const CreatePost = ({ Wrapper, history, onSubmit = ()=>{} }) => {
             { 
                 whichPost === 'group' 
                     ? <ChooseList type="groups" choosenList={choosenGroups} params={{'type': 'all'}}
-                        title="Choose groups, where you want to publish the post:"
+                        title={localLib.chooseGroups}
                         add={id => addChoosens("groups", id)} remove={id => removeChoosens("groups", id)} 
                     /> 
                     : null
             }
 
-            <FieldTextarea title={Library.getText('profile.data.description')} textareaBase={body.base} />
+            <FieldTextarea title={localLib.description} textareaBase={body.base} />
 
             <SClippedFiles>
                 <div className="clip-file-wrapper" onClick={e => e.stopPropagation() || PreloadFile('*', preloadCB)}>
                     <div className="clip-file">
                         <img src="/img/clip.png" alt="clip file"/>
                     </div>
-                    <span>{Library.getText('common.header.create-a.post.clipFile')}</span>
+                    <span>{localLib.clipFile}</span>
                 </div>
                 <PreloadedFilesPlash preloadedFiles={preloadedFiles} removeFile={removeFile} />
             </SClippedFiles>
 
-            <SubmitBtn value={Library.getText('common.header.create-a.create') + "!"} />
+            <SubmitBtn value={localLib.create + "!"} />
         </Wrapper>
     )
 }
-
-export default withRouter(CreatePost);

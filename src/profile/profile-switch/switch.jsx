@@ -33,10 +33,16 @@ const SPublicationsSwitchBtn = styled.div`
 
 const ToSwitch = DebouncedFuctionWithValue(2000);
 
-const publicationsTypes = {
+const localLib = {
     'all': Library.getText('profile.switch.all'),
     'post': Library.getText('profile.switch.posts'),
     'event': Library.getText('profile.switch.events')
+}
+
+const publicationsTypes = {
+    'all': localLib.all,
+    'post': localLib.post,
+    'event': localLib.event
 }
 
 // generate switch btns
@@ -54,9 +60,9 @@ export default function GSwitchPublications({publicationsType, setSwitchType}) {
         
     return (
         <SPublcationsSwitch>
-            <GOneBtnSwitch text={Library.getText('profile.switch.all')} />
-            <GOneBtnSwitch text={Library.getText('profile.switch.posts')} />
-            <GOneBtnSwitch text={Library.getText('profile.switch.events')} />
+            <GOneBtnSwitch text={localLib.all} />
+            <GOneBtnSwitch text={localLib.post} />
+            <GOneBtnSwitch text={localLib.event} />
         </SPublcationsSwitch>
     )
 }

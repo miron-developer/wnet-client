@@ -51,9 +51,15 @@ const SProfileActions = styled.div`
     flex-wrap: wrap;
 `;
 
-export default function UserGroupProfile({match}) {
+const localLib = {
+    'user': Library.getText('common.routes.user'),
+    'notLoadProfile': Library.getText('profile.profile.notLoadProfile'),
+    'notLoadPublications': Library.getText('profile.profile.notLoadPublications'),
+}
+
+export default function UserGroupProfile({match, history}) {
     const ID = parseInt(match.params.id);
-    const isUser = decodeURI(window.location.pathname).split('/')[1] === Library.getText('common.routes.user');
+    const isUser = decodeURI(window.location.pathname).split('/')[1] === localLib.user;
     const [profile, setProfile] = useState({});
     
     const type = isUser ? 'user' : 'group';
@@ -62,7 +68,6 @@ export default function UserGroupProfile({match}) {
             (profile.InRlshState === null) && 
             (profile.OutRlshState === -1 || profile.OutRlshState === null)
         )? false : true;
-    
     const { datalist, isStopLoad, setDataList, getPart } = useFromTo([], 20);
     const [isLoaded, setLoaded] = useState(false)
     const [prevType, setPrevType] = useState();
@@ -71,13 +76,11 @@ export default function UserGroupProfile({match}) {
     // get data about user
     useEffect(() => {
         if (Object.values(profile).length === 0) {
-            GetOne({'id':ID, 'type':'profile'}, type, Library.getText('profile.profile.notLoadProfile'), setProfile);
+            GetOne({'id':ID, 'type':'profile'}, type, localLib.notLoadProfile, setProfile)
+                .then(exist => !exist ? history.push('/') : null)
         } else {
             if (isHaveAccess && !isLoaded) {
-                getPart(
-                    'publications', { 'publicationType': publicationsType, 'type': type, 'id': profile.id }, 
-                    Library.getText('profile.profile.notLoadPublications'), true
-                );
+                getPart('publications', { 'publicationType': publicationsType, 'type': type, 'id': profile.id }, localLib.notLoadPublications, true);
                 setLoaded(true);
             }
             if (prevType !== publicationsType) {
@@ -86,7 +89,7 @@ export default function UserGroupProfile({match}) {
             }
             setPrevType(publicationsType);
         }
-    }, [ID, isHaveAccess, type, isLoaded, profile, prevType, publicationsType, setDataList, getPart]);
+    }, [ID, isHaveAccess, type, isLoaded, profile, prevType, publicationsType, history, setDataList, getPart]);
 
     return (
         <SProfile>
@@ -124,7 +127,7 @@ export default function UserGroupProfile({match}) {
                             () => getPart(
                                 'publications', 
                                 { 'publicationType': publicationsType, 'type': type, 'id': profile.id }, 
-                                Library.getText('profile.profile.notLoadPublications'), 
+                                localLib.notLoadPublications, 
                                 true,
                             )
                         )
