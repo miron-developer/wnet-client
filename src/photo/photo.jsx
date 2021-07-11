@@ -7,12 +7,25 @@ import { GET_FILE_SRC } from "functions/content";
 import { useFromTo } from "functions/hooks";
 import LeaveCommentPlash from 'common/leave-comment-plash/plash';
 import Comments from 'common/comments/comments';
+import Datetime from "common/datetime/datetime";
+import Like from "common/like/like";
 
 import styled from "styled-components";
+
+const SPhotoAdditionalInfo = styled.div`
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    padding: 5px;
+    width: 50%;
+    border-radius: 10px;
+    background: #ffffff0f;
+`;
 
 const SPhoto = styled.div`
     max-height: 30rem;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     margin: 1rem;
@@ -48,11 +61,18 @@ export default function PhotoPage({ history }) {
         }
     }, [getPart, history, isLoaded, ID, photo]);
 
-
+    if (Object.values(photo).length === 0) return null; 
     return (
         <div className="photo-wrapper">
             <SPhoto>
-                <img src={GET_FILE_SRC(photo.src)} alt={photo.title} />
+                <div>
+                    <img src={GET_FILE_SRC(photo.src)} alt={photo.title} />
+                </div>
+
+                <SPhotoAdditionalInfo>
+                    <Like id={ID} carma={photo.carma} isLiked={photo.isLiked} type="photo" />
+                    <Datetime datetime={photo.datetime} />
+                </SPhotoAdditionalInfo>
             </SPhoto>
 
             <LeaveCommentPlash id={ID} type="photo" addComments={addComments} />

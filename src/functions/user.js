@@ -95,14 +95,16 @@ export const SignOut = async(history) => {
  * @var {type=4} AcceptRq
  * @var {type=5} DeclineRq
  */
-export const ToFollow = async(id, isUser = true, actionType = 0, callback = () => {}) => {
+export const ToFollow = async(senderID, receiverID, isUser = true, actionType = 0, callback = () => {}) => {
     const successTexts = ['flwSuccess', 'unflwSuccess', 'rqSuccess', 'repealSuccess', 'acceptSuccess', 'declineSuccess'];
 
     const params = {
         'isUser': isUser,
-        'id': id,
+        'receiverID': receiverID,
         'type': actionType,
     }
+    if (senderID) params.senderID = senderID;
+
 
     const res = await POSTRequestWithParams('/s/rlsh', params);
     if (res.err !== "ok") return Notify('fail', localLib.rlshipError);

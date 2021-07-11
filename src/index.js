@@ -9,18 +9,21 @@ import App from 'App';
 
 
 const check = async() => {
-	const id = await IsLogged();
-	if (id) return await UserOnline(id);
+    const id = await IsLogged();
+    if (id) return await UserOnline(id);
 }
 
 const init = async() => {
     await check();
-    ReactDOM.render(
-        <React.StrictMode>
-            <Router>
-                <App />
-            </Router>
-        </React.StrictMode>,
+    ReactDOM.render( <
+        React.StrictMode >
+        <
+        Router >
+        <
+        App / >
+        <
+        /Router> <
+        /React.StrictMode>,
         document.getElementById('root')
     );
 }

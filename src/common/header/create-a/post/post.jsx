@@ -54,13 +54,14 @@ const customValidation = (title, body, whichPost, choosenGroups = []) => {
     if (whichPost === "group" && choosenGroups.length === 0) return localLib.notChoosenGroup;
 }
 
-const getParams = async(postType, title, body, whichPost, choosenFollowers = [], choosenGroups = []) => {
+const getParams = async(postType, title, body, whichPost, choosenFollowers = [], choosenGroups = [], isHaveClippedFiles = false) => {
     const params = {
         'type': 'post',
         'title': title,
         'postType': postType,
         'which': whichPost,
         'body': body,
+        'isHaveClippedFiles': isHaveClippedFiles ? 1 : 0,
     }
     if (whichPost === "group") params['choosenGroups'] = choosenGroups.map(group => group.id);
     if (postType === 'almost_private') params['choosenFollowers'] = choosenFollowers.map(flwr => flwr.id);
@@ -72,7 +73,6 @@ const onSuccessCreate = (ids = [], preloadedFiles = []) => {
         await Promise.all(preloadedFiles.map(file => UploadFile(file.type, file.file, 'post', id)));
         Notify('success', localLib.created)
     })
-    
 }
 
 export default function CreatePost({ Wrapper, onSubmit = ()=>{} }) {
@@ -110,7 +110,7 @@ export default function CreatePost({ Wrapper, onSubmit = ()=>{} }) {
         <Wrapper onSubmit={e => 
             onSubmit(
                 e, history, 'post', 
-                getParams(postType, title.base.value, body.base.value, whichPost, choosenFollowers, choosenGroups),
+                getParams(postType, title.base.value, body.base.value, whichPost, choosenFollowers, choosenGroups, preloadedFiles.length > 0),
                 customValidation(title.base.value, body.base.value, whichPost, choosenGroups),
                 (id) => onSuccessCreate(id, preloadedFiles),
             )

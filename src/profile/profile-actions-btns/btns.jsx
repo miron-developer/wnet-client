@@ -1,5 +1,6 @@
 import { withRouter } from 'react-router';
 
+import { USER } from 'constants/constants';
 import { Library } from 'constants/language';
 import { ToFollow } from 'functions/user';
 import { PopupOpen } from 'common/popup/popup';
@@ -8,6 +9,7 @@ import { Notify } from 'common/app-notification/notification';
 import Catalogue from 'common/catalogue-of/catalogue';
 
 import ChangeProfile from 'profile/change-profile/change';
+import RequestsHandle from 'profile/profile-handle-group-requests/requests';
 import styled from 'styled-components';
 
 const SPopupActions = styled.div`
@@ -100,6 +102,7 @@ const localLib = {
     'followers': Library.getText('profile.actions-btns.btns.followers'),
     'groups': Library.getText('profile.actions-btns.btns.groups'),
     'members': Library.getText('profile.actions-btns.btns.members'),
+    'requests': Library.getText('common.routes.account.friends.requests'),
     'events': Library.getText('profile.actions-btns.btns.events'),
     'gallery': Library.getText('profile.actions-btns.btns.gallery'),
 }
@@ -139,13 +142,13 @@ const WriteBtnClick = async(history, isUser, id) => {
     history.push(`/${localLib.messenger}/` + t[0] + id);
 }
 
-export const SubsClick = async(clickNumber, isUser, subsState = {'id': 0, 'OutRlshState': 1, 'InRlshState': 1}, setSubsState, isNeedPopup = true) => {
-    if (clickNumber === 0) return ToFollow(subsState.id, isUser, clickNumber, () => setSubsState(Object.assign({}, subsState, {'OutRlshState': 1})));
-    if (clickNumber === 1) return ToFollow(subsState.id, isUser, clickNumber, () => setSubsState(Object.assign({}, subsState, {'OutRlshState': null, 'InRlshState': null})));
-    if (clickNumber === 2) return ToFollow(subsState.id, isUser, clickNumber, () => setSubsState(Object.assign({}, subsState, {'OutRlshState': -1})));
-    if (clickNumber === 3) return ToFollow(subsState.id, isUser, clickNumber, () => setSubsState(Object.assign({}, subsState, {'OutRlshState': null})));
-    if (clickNumber === 4) return ToFollow(subsState.id, isUser, clickNumber, () => setSubsState(Object.assign({}, subsState, {'InRlshState': 1})));
-    if (clickNumber === 5) return ToFollow(subsState.id, isUser, clickNumber, () => setSubsState(Object.assign({}, subsState, {'InRlshState': null})));
+export const SubsClick = async(clickNumber, isUser, senderID, subsState = {'id': 0, 'OutRlshState': 1, 'InRlshState': 1}, setSubsState, isNeedPopup = true) => {
+    if (clickNumber === 0) return ToFollow(senderID, subsState.id, isUser, clickNumber, () => setSubsState(Object.assign({}, subsState, {'OutRlshState': 1})));
+    if (clickNumber === 1) return ToFollow(senderID, subsState.id, isUser, clickNumber, () => setSubsState(Object.assign({}, subsState, {'OutRlshState': null, 'InRlshState': null})));
+    if (clickNumber === 2) return ToFollow(senderID, subsState.id, isUser, clickNumber, () => setSubsState(Object.assign({}, subsState, {'OutRlshState': -1})));
+    if (clickNumber === 3) return ToFollow(senderID, subsState.id, isUser, clickNumber, () => setSubsState(Object.assign({}, subsState, {'OutRlshState': null})));
+    if (clickNumber === 4) return ToFollow(senderID, subsState.id, isUser, clickNumber, () => setSubsState(Object.assign({}, subsState, {'InRlshState': 1})));
+    if (clickNumber === 5) return ToFollow(senderID, subsState.id, isUser, clickNumber, () => setSubsState(Object.assign({}, subsState, {'InRlshState': null})));
     if (isNeedPopup) return PopupOpen(ChangeProfile, {...subsState, 'isUser': isUser});
 };
 
@@ -165,7 +168,7 @@ const GSubsBtn = ({history, id, isMy, isUser, isHaveAccess, profile, setProfile}
 
             <SSubsActions>
                 {
-                    (isHaveAccess && !isMy && isUser) || (profile.OutRlshState === 1 && !isUser)
+                    (isHaveAccess && !isMy && isUser) || (profile.OutRlshState === 1 && !isUser && !isMy)
                     ? <SRlshAction onClick={() => WriteBtnClick(history, isUser, id)}>
                         <i className="fa fa-pencil" aria-hidden="true"></i>
                         <SActionBtnText> {localLib.writeMessage} </SActionBtnText>
@@ -173,7 +176,7 @@ const GSubsBtn = ({history, id, isMy, isUser, isHaveAccess, profile, setProfile}
                     : null
                 }
 
-                <SRlshAction onClick={() => SubsClick(clickNumber, isUser, profile, setProfile)}>
+                <SRlshAction onClick={() => SubsClick(clickNumber, isUser, null, profile, setProfile)}>
                     <i className={`fa fa-${icon}`} aria-hidden="true"></i>
                     <SActionBtnText>{text[0]}</SActionBtnText>
                 </SRlshAction>
@@ -181,7 +184,7 @@ const GSubsBtn = ({history, id, isMy, isUser, isHaveAccess, profile, setProfile}
                 {
                     text.length === 1 
                     ? null 
-                    : <SRlshAction onClick={() => (clickNumber = 5) && SubsClick(clickNumber, isUser, profile, setProfile)}>
+                    : <SRlshAction onClick={() => (clickNumber = 5) && SubsClick(clickNumber, isUser, null, profile, setProfile)}>
                         <i className={`fa fa-${icons[1]}`} aria-hidden="true"></i>
                         <SActionBtnText>{text[1]}</SActionBtnText>
                     </SRlshAction>
@@ -206,8 +209,8 @@ const GOneActionBtn = ({icon, btnText, btnCount, onClick}) => {
 }
 
 // btns' actions
-const HandleClick = (type, get, title, userID,  params = {}) => 
-    PopupOpen(Catalogue, {'type': type, 'get': get, 'title':title, 'params': params, 'userID': userID});
+const HandleClick = (type, get, title, id, params = {}, Component = Catalogue) => 
+    PopupOpen(Component, {'type': type, 'get': get, 'title':title, 'params': params, 'id': id});
 
 // generate action btns relatively from profile type and private type
 const GActionBtns = ({history, id, isMy, isHaveAccess, type, isUser, profile, setProfile = ()=>{}}) => {
@@ -248,6 +251,27 @@ const GActionBtns = ({history, id, isMy, isHaveAccess, type, isUser, profile, se
                                         onClick={() => HandleClick('user', 'users', 'members', profile.id, {'type':'members'})} 
                                     />
 
+                                    {
+                                        profile.ownerUserID === USER.id && profile.isPrivate
+                                        ? <GOneActionBtn 
+                                            icon="0" 
+                                            btnText={localLib.requests} 
+                                            btnCount={profile.requestsCount}
+                                            onClick={
+                                                () => 
+                                                HandleClick(
+                                                    'user', 
+                                                    'users', 
+                                                    'requests', 
+                                                    profile.id, 
+                                                    {'type':'followers', 'flwType': "requests_g"}, 
+                                                    RequestsHandle
+                                                )
+                                            } 
+                                        />
+                                        : null
+                                    }
+                                    
                                     <GOneActionBtn 
                                         icon="2" 
                                         btnText={localLib.events}  

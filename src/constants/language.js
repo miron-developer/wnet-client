@@ -594,6 +594,11 @@ export const Library = {
                         'en': 'commented:',
                         'kz': 'комментировать етти:',
                     },
+                    'requested': {
+                        'ru': 'отправил запрос:',
+                        'en': 'requested:',
+                        'kz': 'сурау жиберди:',
+                    },
                 },
                 'additionalInfos': {
                     'participate': {
@@ -605,6 +610,11 @@ export const Library = {
                         'ru': 'стать членом',
                         'en': 'to be member of the',
                         'kz': 'муше болуга',
+                    },
+                    'toFollow': {
+                        'ru': 'стать последователем',
+                        'en': 'to follow to you',
+                        'kz': 'артыннан еруге',
                     }
                 },
                 'notLoadNotifications': {
@@ -1208,6 +1218,11 @@ export const Library = {
                     'ru': 'события',
                     'en': 'events',
                     'kz': 'окигалар',
+                },
+                'requests': {
+                    'ru': 'запросы',
+                    'en': 'requests',
+                    'kz': 'сураулар',
                 },
             }
         },

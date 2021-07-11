@@ -42,7 +42,7 @@ const SProfileSubsBtn = styled.div`
 
 const subsClick = (e, isUser, subsState, setSubsState=()=>{}) => {
     e.preventDefault();
-    SubsClick(subsState.clickNumber, isUser, subsState, setSubsState, false)
+    SubsClick(subsState.clickNumber, isUser, null, subsState, setSubsState, false)
 }
 
 export default function ResultProfile({

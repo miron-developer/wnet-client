@@ -31,18 +31,18 @@ const localLib = {
 
 const removeFromCatalogue = (id, datalist = [], setDatalist) => setDatalist(datalist.filter(data => data.id !== id));
 
-export default function Catalogue({ type, get, userID, title, params }) {
+export default function Catalogue({ type, get, id, title, params }) {
     const {datalist, isStopLoad, setDataList, getPart} = useFromTo([], 20);
     const [isLoaded, setLoaded] = useState(false);
 
     useEffect(
         () => {
             if (!isLoaded) {
-                getPart(get, {...params, 'id' : userID}, localLib.notLoadDatas, true);
+                getPart(get, {...params, 'id' : id}, localLib.notLoadDatas, true);
                 setLoaded(true);
             }
         },
-        [isLoaded, params, get, userID, getPart]
+        [isLoaded, params, get, id, getPart]
     );
 
     return (
@@ -53,7 +53,7 @@ export default function Catalogue({ type, get, userID, title, params }) {
                     e, 
                     isStopLoad, 
                     false, 
-                    () => getPart(get, {...params, 'userID' : userID}, localLib.notLoadDatas, true)
+                    () => getPart(get, {...params, 'id' : id}, localLib.notLoadDatas, true)
                 )
             }>
                 {

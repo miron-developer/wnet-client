@@ -40,7 +40,7 @@ export const CreateMessage = async(msgType, body, file) => {
     params.senderUserID = USER.id;
     params['receiver' + type[0].toUpperCase() + type.slice(1)+ 'ID'] = companionID;
 
-    SendWSMessage(10, companionID, params);
+    SendWSMessage(10, isUser ? companionID : "all", params);
     appendMessages([params]);
 
     const chatContainer = document.getElementById('chat-container');

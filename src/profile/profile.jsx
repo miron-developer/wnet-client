@@ -65,7 +65,7 @@ export default function UserGroupProfile({match, history}) {
     const type = isUser ? 'user' : 'group';
     const isMy = isUser ? profile && profile.id === USER.id && ID === USER.id : profile.ownerUserID === USER.id;
     const isHaveAccess = profile.isPrivate && !isMy && (
-            (profile.InRlshState === null) && 
+            (profile.InRlshState === null || profile.InRlshState === -1) && 
             (profile.OutRlshState === -1 || profile.OutRlshState === null)
         )? false : true;
     const { datalist, isStopLoad, setDataList, getPart } = useFromTo([], 20);
