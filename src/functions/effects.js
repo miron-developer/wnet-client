@@ -60,7 +60,8 @@ export const ScrollHandler = Debounce(async(e, isStopLoad, isScrollingToTop = fa
         if (await loadCallback()) {
             setTimeout(() => {
                 // smooth scroll
-                parent.childNodes[priorEdgeChildNum].scrollIntoView({ behavior: "smooth" });
+                const el = parent.childNodes[priorEdgeChildNum];
+                if (el) el.scrollIntoView({ behavior: "smooth" });
             }, 100);
         }
     }

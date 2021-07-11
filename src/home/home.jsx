@@ -19,6 +19,8 @@ export default function Home() {
     const [isLoaded, setLoaded] = useState(false)
     const { datalist, isStopLoad, getPart } = useFromTo([], 5);
 
+    console.log('data', datalist);
+
     useEffect(()=> {
         if (datalist.length === 0 && !isLoaded) {
             loadNews(getPart);
